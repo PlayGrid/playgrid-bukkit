@@ -1,0 +1,4 @@
+*.class
+/.settings
+/dist
+/target

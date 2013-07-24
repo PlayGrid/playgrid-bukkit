@@ -1,0 +1,61 @@
+## General Settings
+
+## Secret Key 
+##  Add your game server at www.playgrid.com and insert your secret key below
+
+api.secret_key: 
+
+
+## Player Settings
+##
+## Player Authorization
+## Require PlayGrid authorized players
+##  - true (default): Require PlayGrid authorized players
+##  - false: Allow unauthorized players
+
+player.authorization_required: true
+
+
+## Player Status
+##
+## Status keys
+##  - action: allow | kick  - controls whether users with given status are allowed to join or are kicked
+##  - message: text  -  message to display when player logs into server ($game_site$ = your playgrid home page url, $playername$ = minecraft player name)
+##  - reminder_message: text - a message to display to the player once per minute
+##  - group: group-name  -  permission group to assign to player.  Note, group requires that you have a permission system with group support
+##  - max_unverified_days: maximum number of days that a user can play on the server without verifying their email address.  This key only applies to the unverified status and when unverified.action is "allow".  Set to "any" to allow users to play for any number of days in an unverified state
+
+player.status:
+
+    ## PGP Communication Error Occurred
+    error:
+        action: allow
+        message: Error trying to authenticate with your $game_site$ account.
+
+    ## Player does not have an account
+    none:
+        action: allow
+        message: Please sign up at $game_site$ <-- click> to gain member status and enable additional features. 
+
+    ## Player has signed up but has not verified their account email
+    unverified:
+        action: allow
+        message: Welcome to our Server!  Please verify your email by going to $game_site$ <-- click> to enable member status and additional features.
+        max_unverified_days: 10
+
+    ## Player has signed up and verified their account email
+    authorized:
+        action: allow
+        message: Welcome back $playername$!
+
+    ## Player has been temporarily suspended
+    suspended: 
+        action: kick
+        message: You have been temporarily SUSPENDED.
+
+    ## Player has been permanently banned - until manually unbanned
+    banned:        
+        action: kick
+        message: You have been permanently BANNED.
+
+

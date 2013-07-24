@@ -1,0 +1,5 @@
+main: com.playgrid.bukkit.plugin.PlayGridMC
+name: PlayGridMC
+version: ${project.version}
+author: PlayGrid
+description: PlayGrid Bukkit Plugin

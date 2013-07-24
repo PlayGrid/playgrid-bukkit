@@ -1,0 +1,106 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <groupId>com.playgrid.bukkit</groupId>
+  <artifactId>playgrid-bukkit</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <plugins.dir>dist/plugins</plugins.dir>
+  </properties>
+  
+  <name>PlayGrid Bukkit Plugin</name>
+
+  <organization>
+    <name>PlayGrid</name>
+    <url>http://www.playgrid.com/</url>
+  </organization>
+
+  <repositories>
+    <repository>
+      <id>bukkit-repo</id>
+      <url>http://repo.bukkit.org/content/groups/public/</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+    	<groupId>com.playgrid</groupId>
+    	<artifactId>pgp-java-sdk</artifactId>
+    	<version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+    	<groupId>org.bukkit</groupId>
+    	<artifactId>bukkit</artifactId>
+    	<version>1.6.2-R0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+    	<groupId>org.bukkit</groupId>
+    	<artifactId>craftbukkit</artifactId>
+    	<version>1.6.2-R0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+    	<groupId>joda-time</groupId>
+    	<artifactId>joda-time</artifactId>
+    	<version>2.2</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    
+    <resources>
+        <resource>
+            <directory>src/main/resources</directory>
+            <filtering>true</filtering>
+        </resource>
+    </resources>
+    
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+   
+        <plugin>
+			<artifactId>maven-antrun-plugin</artifactId>
+			<executions>
+				<execution>
+					<id>copy-plugin</id>
+					<phase>install</phase>
+					<configuration>
+						<tasks>
+							<mkdir dir="${basedir}/${plugins.dir}"/>
+							<copy file="${project.build.directory}/${project.build.finalName}.jar" todir="${basedir}/${plugins.dir}" verbose="true"/>
+						</tasks>
+					</configuration>
+					<goals>  
+    					<goal>run</goal>
+					</goals>
+				</execution>
+				<execution>
+					<id>delete-plugin</id>
+					<phase>clean</phase>
+					<configuration>
+						<tasks>
+                            <delete file="${basedir}/${plugins.dir}/${project.build.finalName}.jar" quiet="true"/>
+						</tasks>
+					</configuration>
+					<goals>  
+					   <goal>run</goal>
+					</goals>
+				</execution>
+			</executions>
+        </plugin>
+    </plugins>
+  
+  </build>  
+
+  <url>http://www.playgrid.com/</url>
+  <description>A Bukkit plugin to connect to the PlayGrid Platform</description>
+
+</project>
