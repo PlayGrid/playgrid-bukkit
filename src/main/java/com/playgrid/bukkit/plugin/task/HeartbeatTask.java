@@ -28,11 +28,6 @@ public class HeartbeatTask extends BukkitRunnable {
 		GameManager gameManager = RestAPI.getInstance().getGamesManager();
 		gameManager.heartbeat();
 		
-//		plugin.getServer().broadcastMessage("Hello HeartbeatTask");
-//		Player[] onlinePlayers = plugin.getServer().getOnlinePlayers();
-//		Integer size = onlinePlayers.length;
-//		plugin.getLogger().info(size.toString());
-//		
 	}
 
 }
