@@ -28,9 +28,9 @@ public class PlayGridMC extends JavaPlugin {
 		this.saveDefaultConfig();
 		
 		// Setup API
-		String token 	= this.getConfig().getString("api.secret_key");
-		String url 		= this.getConfig().getString("api.url");
-		String version 	= this.getConfig().getString("api.version");
+		String token    = this.getConfig().getString("api.secret_key");
+		String url      = this.getConfig().getString("api.url");
+		String version  = this.getConfig().getString("api.version");
 		
 		RestAPI.getConfig().setAccessToken(token);
 		RestAPI.getConfig().setURL(url);
@@ -44,7 +44,7 @@ public class PlayGridMC extends JavaPlugin {
 		getLogger().info(String.format("Connected as game %s.", game.toString()));
 
 
-		// Initialize Listener
+		// Initialize Listeners
 		new PlayerConnectionListener(this);
 		
 		// Initialize Heartbeat
