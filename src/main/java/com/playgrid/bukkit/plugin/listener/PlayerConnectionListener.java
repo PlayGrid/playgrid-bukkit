@@ -179,6 +179,10 @@ public class PlayerConnectionListener implements Listener {
 	
 	
 	private Player join(Player player) {
+		if (player.url == null) {                                               // Players with ERROR status are not real, return
+			return player;
+		}
+		
 		PlayerManager playerManager = RestAPI.getInstance().getPlayerManager();
 
 		PlayerResponse response = playerManager.join(player);
@@ -189,6 +193,9 @@ public class PlayerConnectionListener implements Listener {
 
 
 	private Player quit(Player player) {
+		if (player.url == null) {                                               // Players with ERROR status are not real, return
+			return player;
+		}
 		PlayerManager playerManager = RestAPI.getInstance().getPlayerManager();
 		
 		PlayerResponse response = playerManager.quit(player);
