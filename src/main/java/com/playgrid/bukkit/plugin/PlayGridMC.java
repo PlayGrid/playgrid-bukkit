@@ -3,6 +3,9 @@ package com.playgrid.bukkit.plugin;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.milkbowl.vault.permission.Permission;
+
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.playgrid.api.client.RestAPI;
@@ -13,22 +16,29 @@ import com.playgrid.api.entity.Player;
 import com.playgrid.bukkit.plugin.listener.PlayerConnectionListener;
 import com.playgrid.bukkit.plugin.task.HeartbeatTask;
 
+
 public class PlayGridMC extends JavaPlugin {
 
-	public Game game = null;
+	public Game game;
+	public Permission permissionProvider;
+
 	private final Map<String, Player> activePlayers = new HashMap<String, Player>();
 	
 	
+	/**
+	 * Enable PlayGridMC Plugin
+	 */
 	@Override
 	public void onEnable() {
-		getLogger().info("onEnable has been invoked!");
 
-		// Get config
-		this.getConfig().options().copyDefaults(true);
-		this.saveDefaultConfig();
+		initializePermissions();                                                // Initialize Features
 		
-		// Setup API
-		String token    = this.getConfig().getString("api.secret_key");
+		
+		this.getConfig().options().copyDefaults(true);                          // Get configuration
+		this.saveDefaultConfig();
+
+		
+		String token    = this.getConfig().getString("api.secret_key");         // Setup API
 		String url      = this.getConfig().getString("api.url");
 		String version  = this.getConfig().getString("api.version");
 		
@@ -38,38 +48,59 @@ public class PlayGridMC extends JavaPlugin {
 
 		GameManager gameManager = RestAPI.getInstance().getGamesManager();
 
-		// Connect Game
-		GameResponse gameResponse = gameManager.connect();
+		GameResponse gameResponse = gameManager.connect();                      // Connect Game // TODO (JP): What happens with bad token?
 		this.game = gameResponse.resources;
-		getLogger().info(String.format("Connected as game %s.", game.toString()));
+		getLogger().info(String.format("Connected game: %s", game.name));
 
 
-		// Initialize Listeners
-		new PlayerConnectionListener(this);
-		
-		// Initialize Heartbeat
-		new HeartbeatTask(this);
+		new PlayerConnectionListener(this);                                     // Initialize Listeners
+		new HeartbeatTask(this);                                                // Initialize Heartbeat
 		
 	}
 
 	
-	
+
+	/**
+	 * Disable PlayGridMC Plugin
+	 */
 	@Override
 	public void onDisable() {
-		
-		getLogger().info("onDisable has been invoked!");
 		
 		// TODO: (JP) Disable Listeners & Tasks
 
 		GameManager gameManager = RestAPI.getInstance().getGamesManager();
 
-		// Disconnect Game
-		GameResponse gameResponse = gameManager.disconnect();
+		GameResponse gameResponse = gameManager.disconnect();                   // Disconnect Game
 		Game game = gameResponse.resources;
-		getLogger().info(game.toString());
+		getLogger().info(String.format("Disconnected game: %s", game.name));
 
 	}
 
+	
+
+	/**
+	 * Initialize Permissions Feature
+	 * @return boolean
+	 */
+	private boolean initializePermissions() {
+	    RegisteredServiceProvider<Permission> rsp;
+	    rsp = getServer().getServicesManager().getRegistration(Permission.class);
+	    
+	    if (rsp != null) {
+	    	permissionProvider = rsp.getProvider();
+	    	
+	    	String msg = String.format("Detected permissions provider - %s", permissionProvider.getName());
+	    	getLogger().info(msg);
+	    
+	    } else {
+	    	getLogger().warning("Permissions disabled.");
+	    
+	    }
+	    
+	    return permissionProvider != null;
+	}
+
+	
 
 	/**
 	 * Store an active Player by player_token
