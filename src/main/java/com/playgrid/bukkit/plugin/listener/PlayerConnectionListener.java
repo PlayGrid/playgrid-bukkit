@@ -134,12 +134,23 @@ public class PlayerConnectionListener implements Listener {
 
 		String message = (String) statusConfig.get("message");
 		
-		if (pPlayer.status == Player.Status.UNVERIFIED) {
-			Integer max_unverified_days = (Integer)statusConfig.get("max_unverified_days");
-			if (max_unverified_days != -1) {
-				message += "\n\nWarning! - you have " + Long.toString(max_unverified_days - pPlayer.unverified_days) + " days left to verify your account.";
-			}
 
+		switch(pPlayer.status) {
+		
+			case UNVERIFIED:
+				int max_unverified_days = (Integer) statusConfig.get("max_unverified_days");
+				if (max_unverified_days != -1) {
+					message += "\n\nWarning! - you have " + Integer.toString(max_unverified_days - pPlayer.unverified_days) + " days left to verify your account.";
+				}
+				break;
+
+			case SUSPENDED:
+				String duration = getSuspensionDuration(pPlayer);
+				message += String.format("\n\nSuspension ends in %s", duration);
+				break;
+				
+			default:
+				break;
 		}
 		
 		event.getPlayer().sendMessage(message);
