@@ -24,46 +24,46 @@
     </repository>
     <repository>
       <id>vault-repo</id>
-      <url>http://ci.herocraftonline.com/plugin/repository/everything</url>
+      <url>http://ci.herocraftonline.com/plugin/repository/everything/</url>
     </repository>
   </repositories>
 
   <dependencies>
     <dependency>
-    	<groupId>com.playgrid</groupId>
-    	<artifactId>pgp-java-sdk</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
+      <groupId>com.playgrid</groupId>
+      <artifactId>pgp-java-sdk</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
-    	<groupId>org.bukkit</groupId>
-    	<artifactId>bukkit</artifactId>
-    	<version>1.6.2-R0.1-SNAPSHOT</version>
+      <groupId>org.bukkit</groupId>
+      <artifactId>bukkit</artifactId>
+      <version>1.6.2-R0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
-    	<groupId>org.bukkit</groupId>
-    	<artifactId>craftbukkit</artifactId>
-    	<version>1.6.2-R0.1-SNAPSHOT</version>
+      <groupId>org.bukkit</groupId>
+      <artifactId>craftbukkit</artifactId>
+      <version>1.6.2-R0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
-    	<groupId>joda-time</groupId>
-    	<artifactId>joda-time</artifactId>
-    	<version>2.2</version>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>2.2</version>
     </dependency>
     <dependency>
-    	<groupId>net.milkbowl.vault</groupId>
-    	<artifactId>Vault</artifactId>
-    	<version>1.2.27</version>
-    	<scope>provided</scope>
+      <groupId>net.milkbowl.vault</groupId>
+      <artifactId>Vault</artifactId>
+      <version>1.2.27</version>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
 
   <build>
     
     <resources>
-        <resource>
-            <directory>src/main/resources</directory>
-            <filtering>true</filtering>
-        </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
     </resources>
     
     <plugins>
@@ -75,37 +75,77 @@
           <target>1.6</target>
         </configuration>
       </plugin>
-   
-        <plugin>
-			<artifactId>maven-antrun-plugin</artifactId>
-			<executions>
-				<execution>
-					<id>copy-plugin</id>
-					<phase>install</phase>
-					<configuration>
-						<tasks>
-							<mkdir dir="${basedir}/${plugins.dir}"/>
-							<copy file="${project.build.directory}/${project.build.finalName}.jar" todir="${basedir}/${plugins.dir}" verbose="true"/>
-						</tasks>
-					</configuration>
-					<goals>  
-    					<goal>run</goal>
-					</goals>
-				</execution>
-				<execution>
-					<id>delete-plugin</id>
-					<phase>clean</phase>
-					<configuration>
-						<tasks>
-                            <delete file="${basedir}/${plugins.dir}/${project.build.finalName}.jar" quiet="true"/>
-						</tasks>
-					</configuration>
-					<goals>  
-					   <goal>run</goal>
-					</goals>
-				</execution>
-			</executions>
-        </plugin>
+    
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-plugin</id>
+            <phase>install</phase>
+            <configuration>
+              <tasks>
+                <mkdir dir="${basedir}/${plugins.dir}"/>
+                <copy file="${project.build.directory}/${project.build.finalName}.jar" todir="${basedir}/${plugins.dir}" verbose="true"/>
+              </tasks>
+            </configuration>
+            <goals>  
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>delete-plugin</id>
+            <phase>clean</phase>
+            <configuration>
+              <tasks>
+                <delete file="${basedir}/${plugins.dir}/${project.build.finalName}.jar" quiet="true"/>
+              </tasks>
+            </configuration>
+            <goals>  
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.1</version>
+        <configuration>
+          <minimizeJar>true</minimizeJar>
+          <finalName>${project.build.finalName}</finalName>
+          <artifactSet>
+            <includes>
+              <include>com.playgrid:pgp-java-sdk:jar:*</include>
+              <include>joda-time:*</include>
+            </includes>
+          </artifactSet>
+          <filters>
+            <filter>
+              <artifact>com.playgrid:pgp-java-sdk</artifact>
+              <includes>
+                <include>**</include>
+              </includes>
+            </filter>     
+            <filter>
+              <artifact>*:*</artifact>
+              <excludes>
+                <exclude>META-INF/*.SF</exclude>
+                <exclude>META-INF/*.DSA</exclude>
+                <exclude>META-INF/*.RSA</exclude>
+              </excludes>
+            </filter>
+          </filters>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   
   </build>  
