@@ -30,7 +30,7 @@ public class PlayerConnectionListener implements Listener {
 	public PlayerConnectionListener(PlayGridMC plugin) {
 	
 		this.plugin = plugin;
-		this.plugin.getServer().getPluginManager().registerEvents(this, plugin);
+		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 		
 	}
 
@@ -38,8 +38,6 @@ public class PlayerConnectionListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent event) {
-		
-		this.plugin.getLogger().info("onPlayerLogin invoked");
 		
 		Player pPlayer = null;
 		Map<String, Object> statusConfig = null;
@@ -49,7 +47,7 @@ public class PlayerConnectionListener implements Listener {
 			pPlayer = authorize(player_token);
 			
 		} catch (NotFoundException e) {
-			this.plugin.getLogger().severe(e.getMessage());
+			plugin.getLogger().severe(e.getMessage());
 
 			pPlayer = new Player();
 			pPlayer.name = player_token;
@@ -97,19 +95,19 @@ public class PlayerConnectionListener implements Listener {
 				break;
 			
 			default:
-				this.plugin.getLogger().info("Unhandled player status: " + pPlayer.status.toString());
+				plugin.getLogger().info("Unhandled player status: " + pPlayer.status.toString());
 				break;
 
 		}
 		
 		if (statusConfig.get("action").toString().equalsIgnoreCase("allow")) {
-			this.plugin.addPlayer(pPlayer);
+			plugin.addPlayer(pPlayer);
 			
 		} else {
 			event.disallow(result, message);
-			this.plugin.removePlayer(player_token);
+			plugin.removePlayer(player_token);
 
-			// TODO: (JP) Remove Permissions
+			plugin.permissions.removeGroups(event.getPlayer());
 		
 		}
 		
@@ -120,15 +118,14 @@ public class PlayerConnectionListener implements Listener {
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		this.plugin.getLogger().info("onPlayerJoin invoked");
 		
 		String player_token = event.getPlayer().getName();
 		Player pPlayer = plugin.getPlayer(player_token);
 		
-		// TODO: (JP) Add Stats
+		// TODO: (JP) Send Stats
 		
 		pPlayer = join(pPlayer);
-		this.plugin.addPlayer(pPlayer);
+		plugin.addPlayer(pPlayer);
 			
 		Map<String, Object> statusConfig = getPlayerStatusConfig(pPlayer);
 
@@ -155,7 +152,7 @@ public class PlayerConnectionListener implements Listener {
 		
 		event.getPlayer().sendMessage(message);
 
-		// TODO: (JP) Add Permissions
+		plugin.permissions.setGroups(event.getPlayer(), pPlayer.permission_groups);
 		
 	}
 	
@@ -163,12 +160,11 @@ public class PlayerConnectionListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		this.plugin.getLogger().info("onPlayerQuit invoked");
 		
 		String player_token = event.getPlayer().getName();
 		Player pPlayer = plugin.removePlayer(player_token);
 		
-		// TODO: (JP) Add Stats
+		// TODO: (JP) Send Stats
 		
 		pPlayer = quit(pPlayer);
 		
@@ -180,7 +176,7 @@ public class PlayerConnectionListener implements Listener {
 
 		PlayerManager playerManager = RestAPI.getInstance().getPlayerManager();
 
-		Boolean authorization_required = this.plugin.getConfig().getBoolean("player.authorization_required");
+		Boolean authorization_required = plugin.getConfig().getBoolean("player.authorization_required");
 
 		PlayerResponse response = playerManager.authorize(player_token, authorization_required);
 		return response.resources;
@@ -219,11 +215,11 @@ public class PlayerConnectionListener implements Listener {
 	private Map<String, Object> getPlayerStatusConfig(Player pPlayer) {
 		
 		String configPath = String.format("player.status.%s", pPlayer.status.toString().toLowerCase());
-		Map<String, Object> statusConfig = this.plugin.getConfig().getConfigurationSection(configPath).getValues(true);
+		Map<String, Object> statusConfig = plugin.getConfig().getConfigurationSection(configPath).getValues(true);
 		
 		String message = (String) statusConfig.get("message");
 		if (message != null) {
-			Game game = this.plugin.game;
+			Game game = plugin.game;
 			message = message.replace("$game_site$", game.website.toString());
 			message = message.replace("$playername$", pPlayer.name);
 		} else {

@@ -3,9 +3,6 @@ package com.playgrid.bukkit.plugin;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.milkbowl.vault.permission.Permission;
-
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.playgrid.api.client.RestAPI;
@@ -14,13 +11,14 @@ import com.playgrid.api.entity.Game;
 import com.playgrid.api.entity.GameResponse;
 import com.playgrid.api.entity.Player;
 import com.playgrid.bukkit.plugin.listener.PlayerConnectionListener;
+import com.playgrid.bukkit.plugin.permissions.Permissions;
 import com.playgrid.bukkit.plugin.task.HeartbeatTask;
 
 
 public class PlayGridMC extends JavaPlugin {
 
 	public Game game;
-	public Permission permissionProvider;
+	public Permissions permissions;
 
 	private final Map<String, Player> activePlayers = new HashMap<String, Player>();
 	
@@ -30,17 +28,17 @@ public class PlayGridMC extends JavaPlugin {
 	 */
 	@Override
 	public void onEnable() {
+		
+		permissions = new Permissions(this);                                    // Initialize Features
+		
+		
+		getConfig().options().copyDefaults(true);                               // Get configuration
+		saveDefaultConfig();
 
-		initializePermissions();                                                // Initialize Features
 		
-		
-		this.getConfig().options().copyDefaults(true);                          // Get configuration
-		this.saveDefaultConfig();
-
-		
-		String token    = this.getConfig().getString("api.secret_key");         // Setup API
-		String url      = this.getConfig().getString("api.url");
-		String version  = this.getConfig().getString("api.version");
+		String token    = getConfig().getString("api.secret_key");              // Setup API
+		String url      = getConfig().getString("api.url");
+		String version  = getConfig().getString("api.version");
 		
 		RestAPI.getConfig().setAccessToken(token);
 		RestAPI.getConfig().setURL(url);
@@ -49,7 +47,7 @@ public class PlayGridMC extends JavaPlugin {
 		GameManager gameManager = RestAPI.getInstance().getGamesManager();
 
 		GameResponse gameResponse = gameManager.connect();                      // Connect Game // TODO (JP): What happens with bad token?
-		this.game = gameResponse.resources;
+		game = gameResponse.resources;
 		getLogger().info(String.format("Connected game: %s", game.name));
 
 
@@ -71,7 +69,7 @@ public class PlayGridMC extends JavaPlugin {
 		GameManager gameManager = RestAPI.getInstance().getGamesManager();
 
 		GameResponse gameResponse = gameManager.disconnect();                   // Disconnect Game
-		Game game = gameResponse.resources;
+		game = gameResponse.resources;
 		getLogger().info(String.format("Disconnected game: %s", game.name));
 
 	}
@@ -79,57 +77,38 @@ public class PlayGridMC extends JavaPlugin {
 	
 
 	/**
-	 * Initialize Permissions Feature
-	 * @return boolean
-	 */
-	private boolean initializePermissions() {
-	    RegisteredServiceProvider<Permission> rsp;
-	    rsp = getServer().getServicesManager().getRegistration(Permission.class);
-	    
-	    if (rsp != null) {
-	    	permissionProvider = rsp.getProvider();
-	    	
-	    	String msg = String.format("Detected permissions provider - %s", permissionProvider.getName());
-	    	getLogger().info(msg);
-	    
-	    } else {
-	    	getLogger().warning("Permissions disabled.");
-	    
-	    }
-	    
-	    return permissionProvider != null;
-	}
-
-	
-
-	/**
-	 * Store an active Player by player_token
+	 * Store Player in the activePlayers cache
+	 * @param player
 	 */
 	public void addPlayer(Player player) {
 		
-		this.activePlayers.put(player.name, player);
+		activePlayers.put(player.name, player);
 
 	}
 
 	
 	
 	/**
-	 * Retrieve an active Player by player_token
+	 * Retrieve Player from the activePlayers cache
+	 * @param player_token
+	 * @return Player
 	 */
 	public Player getPlayer(String player_token) {
 
-		return this.activePlayers.get(player_token);
+		return activePlayers.get(player_token);
 
 	}
 
 	
 	
 	/**
-	 * Remove an active Player by player_token
+	 * Remove Player from activePlayers cache
+	 * @param player_token
+	 * @return the removed Player
 	 */
 	public Player removePlayer(String player_token) {
 		
-		return this.activePlayers.remove(player_token);
+		return activePlayers.remove(player_token);
 		
 	}
 	
