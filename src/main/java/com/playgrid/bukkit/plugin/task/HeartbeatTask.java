@@ -14,7 +14,7 @@ public class HeartbeatTask extends BukkitRunnable {
 	public HeartbeatTask(JavaPlugin plugin) {
 		
 		this.plugin = plugin;
-		this.runTaskTimerAsynchronously(plugin, 20*5, 20*10);					// TODO: (JP) Reset to 20*60, 20*60	
+		this.runTaskTimerAsynchronously(plugin, 20*60, 20*60);                  // Testing: 20*5, 20*10 	
 
 	}
 
