@@ -36,13 +36,12 @@ public class PlayGridMC extends JavaPlugin {
 		saveDefaultConfig();
 
 		
-		String token    = getConfig().getString("api.secret_key");              // Setup API
-		String url      = getConfig().getString("api.url");
-		String version  = getConfig().getString("api.version");
+		@SuppressWarnings("unchecked")
+		Map<String, String> pgp = (Map<String, String>) (Map<?, ?>)getConfig().getConfigurationSection("pgp").getValues(true);
 		
-		RestAPI.getConfig().setAccessToken(token);
-		RestAPI.getConfig().setURL(url);
-		RestAPI.getConfig().setVersion(version);
+		RestAPI.getConfig().setAccessToken(pgp.get("secret_key"));              // Setup API
+		RestAPI.getConfig().setURL(pgp.get("url"));
+		RestAPI.getConfig().setVersion(pgp.get("version"));
 
 		GameManager gameManager = RestAPI.getInstance().getGamesManager();
 

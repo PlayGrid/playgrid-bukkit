@@ -1,9 +1,11 @@
 ## General Settings
 
+## PlayGrid Settings
+##
 ## Secret Key 
-##  Add your game server at www.playgrid.com and insert your secret key below
+##  Create your game server at www.playgrid.com and insert your secret key below
 
-api.secret_key: 
+pgp.secret_key: 
 
 
 ## Player Settings
