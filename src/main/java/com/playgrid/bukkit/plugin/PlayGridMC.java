@@ -32,10 +32,11 @@ public class PlayGridMC extends JavaPlugin {
 		
 		permissions = new Permissions(this);                                    // Initialize Features
 		
-		
 		getConfig().options().copyDefaults(true);                               // Get configuration
 		saveDefaultConfig();
 
+		boolean debug   = getConfig().getBoolean("debug");
+		RestAPI.getConfig().setDebug(debug);
 		
 		@SuppressWarnings("unchecked")
 		Map<String, String> pgp = (Map<String, String>) (Map<?, ?>)getConfig().getConfigurationSection("pgp").getValues(true);
