@@ -3,6 +3,7 @@ package com.playgrid.bukkit.plugin;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.playgrid.api.client.RestAPI;
@@ -72,7 +73,43 @@ public class PlayGridMC extends JavaPlugin {
 		getLogger().info(String.format("Disconnected game: %s", game.name));
 
 	}
+	
+	
+	/**
+	 * Get Config
+	 * 
+	 * Adds support to migrate config.yml files
+	 */
+	@Override
+	public FileConfiguration getConfig() {
+		FileConfiguration config = super.getConfig();
+		
+		if (!(config.contains("secret_key") || config.contains("player_status"))) {
+			return config;
+		}
+		
+		getLogger().info("Migrating config.yml to new schema");
 
+		
+		// Transpose
+		config.set("pgp.secret_key", config.getString("secret_key"));
+		config.set("secret_key", null);
+		
+		String url = config.getString("api_base");                              // FIXME (JP): Process URL scheme
+		config.set("pgp.url", url);
+		config.set("api_base", null);
+		
+		String authorization_required = (config.getString("player_status.none.action") == "allow") ? "true" : "false";
+		config.set("player.authorization_required", authorization_required);
+		
+		config.set("player.status", config.getConfigurationSection("player_status"));
+		config.set("player_status", null);
+		
+		// Backup config.yml file
+		// Save
+		
+		return config;
+    }
 	
 
 	/**
