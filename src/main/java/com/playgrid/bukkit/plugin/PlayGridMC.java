@@ -25,13 +25,11 @@ public class PlayGridMC extends JavaPlugin {
 	
 	
 	/**
-	 * Enable PlayGridMC Plugin
+	 * Load PlayGridMC Plugin
 	 */
 	@Override
-	public void onEnable() {
-		
-		permissions = new Permissions(this);                                    // Initialize Features
-		
+    public void onLoad() {
+    	
 		getConfig().options().copyDefaults(true);                               // Get configuration
 		saveDefaultConfig();
 
@@ -45,9 +43,20 @@ public class PlayGridMC extends JavaPlugin {
 		RestAPI.getConfig().setURL(pgp.get("url"));
 		RestAPI.getConfig().setVersion(pgp.get("version"));
 
+    }
+
+	
+	/**
+	 * Enable PlayGridMC Plugin
+	 */
+	@Override
+	public void onEnable() {
+		
+		permissions = new Permissions(this);                                    // Initialize Features
+		
 		GameManager gameManager = RestAPI.getInstance().getGamesManager();
 
-		GameResponse gameResponse = gameManager.connect();                      // Connect Game // TODO (JP): What happens with bad token?
+		GameResponse gameResponse = gameManager.connect();                      // Connect Game // TODO (JP): What happens with bad token or gets a 404?
 		game = gameResponse.resources;
 		getLogger().info(String.format("Connected game: %s", game.name));
 
