@@ -23,7 +23,8 @@ public class HeartbeatTask extends BukkitRunnable {
 	@Override
 	public void run() {
 		
-		plugin.getLogger().info("HeartbeatTask was invoked!");
+		
+		plugin.getLogger().info(String.format("Heartbeat - Online Players: %s", plugin.getServer().getOnlinePlayers().length));
 
 		GameManager gameManager = RestAPI.getInstance().getGamesManager();
 		gameManager.heartbeat();

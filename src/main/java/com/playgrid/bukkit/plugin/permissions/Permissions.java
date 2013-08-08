@@ -1,11 +1,15 @@
 package com.playgrid.bukkit.plugin.permissions;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.milkbowl.vault.permission.Permission;
+
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import com.playgrid.bukkit.plugin.PlayGridMC;
-
-import net.milkbowl.vault.permission.Permission;
 
 
 
@@ -24,7 +28,6 @@ public class Permissions {
 		this.plugin = plugin;
 
         if(plugin.getServer().getPluginManager().isPluginEnabled("Vault")) {
-	    	plugin.getLogger().info("Detected Vault");
 
 			RegisteredServiceProvider<Permission> rsp;
 		    rsp = plugin.getServer().getServicesManager().getRegistration(Permission.class);
@@ -32,12 +35,12 @@ public class Permissions {
 		    if (rsp != null) {
 		    	provider = rsp.getProvider();
 		    	
-		    	String msg = String.format("Detected permissions provider %s", provider.getName());
+		    	String msg = String.format("Detected Vault permissions provider %s", provider.getName());
 		    	plugin.getLogger().info(msg);
 		    	return;
 
 		    } else {
-		    	disable("Permissions provider not found");
+		    	disable("Vault permissions provider not found");
 
 		    }
 		    
@@ -83,11 +86,28 @@ public class Permissions {
 	public boolean addGroups(Player player, String[] groups) {
 		if (!isEnabled()) { return false; }
 		
+		List<String> successList = new ArrayList<String>();
+		List<String> failList = new ArrayList<String>();
+		
 		for (String group : groups) {
-			addGroup(player, group);
+			if (addGroup(player, group)) {
+				successList.add(group);
+				continue;
+			}
+			failList.add(group);
 		}
 		
-		return true;                                                            // FIXME (JP): Test for truth?
+		String successMsg = String.format("[PlayGrid] You have been added to the %s groups", successList);
+		String failMsg = String.format("[PlayGrid] Failed to add you to the %s groups", failList);
+
+		player.sendMessage(ChatColor.GREEN + successMsg);
+		if (failList.size() > 0) {
+			player.sendMessage(ChatColor.RED + failMsg);
+			return false;
+			
+		}
+		
+		return true;
 		
 	}
 

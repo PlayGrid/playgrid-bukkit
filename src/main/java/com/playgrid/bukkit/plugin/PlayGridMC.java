@@ -58,7 +58,7 @@ public class PlayGridMC extends JavaPlugin {
 
 		GameResponse gameResponse = gameManager.connect();                      // Connect Game // TODO (JP): What happens with bad token or gets a 404?
 		game = gameResponse.resources;
-		getLogger().info(String.format("Connected game: %s", game.name));
+		getLogger().info(String.format("Connected as %s", game.name));
 
 
 		new PlayerConnectionListener(this);                                     // Initialize Listeners

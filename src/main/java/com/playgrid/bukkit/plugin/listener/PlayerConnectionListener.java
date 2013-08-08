@@ -1,5 +1,6 @@
 package com.playgrid.bukkit.plugin.listener;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import javax.ws.rs.NotFoundException;
@@ -154,6 +155,8 @@ public class PlayerConnectionListener implements Listener {
 
 		plugin.permissions.setGroups(event.getPlayer(), pPlayer.permission_groups);
 		
+		plugin.getLogger().info(pPlayer.name + " joined and was added to the " + Arrays.toString(pPlayer.permission_groups) + " groups.");
+		
 	}
 	
 	
@@ -167,7 +170,9 @@ public class PlayerConnectionListener implements Listener {
 		// TODO: (JP) Send Stats
 		
 		pPlayer = quit(pPlayer);
-		
+
+		plugin.getLogger().info(pPlayer.name + " has left.");
+
 	}
 
 	
