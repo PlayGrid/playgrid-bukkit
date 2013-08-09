@@ -3,6 +3,7 @@ package com.playgrid.bukkit.plugin;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -52,17 +53,30 @@ public class PlayGridMC extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		
-		permissions = new Permissions(this);                                    // Initialize Features
+		permissions = new Permissions(this);                                    // Initialize features
+
+		if (getConfig().getString("pgp.secret_key") == null) {                  // Confirm secret_key
+			StringBuilder builder = new StringBuilder();
+			builder.append(ChatColor.RED);
+			builder.append("[PlayGridMC] Config.yml property 'secret_key' is missing. "); 
+			builder.append("Set your 'secret_key' to your key on playgrid.com -> Admin -> Plugin.");
+			
+			getServer().getConsoleSender().sendMessage(builder.toString());
+			
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		
+		}
 		
 		GameManager gameManager = RestAPI.getInstance().getGamesManager();
 
-		GameResponse gameResponse = gameManager.connect();                      // Connect Game // TODO (JP): What happens with bad token or gets a 404?
+		GameResponse gameResponse = gameManager.connect();                      // Connect game // TODO (JP): What happens with bad token or gets a 404?
 		game = gameResponse.resources;
 		getLogger().info(String.format("Connected as %s", game.name));
 
 
-		new PlayerConnectionListener(this);                                     // Initialize Listeners
-		new HeartbeatTask(this);                                                // Initialize Heartbeat
+		new PlayerConnectionListener(this);                                     // Initialize listeners
+		new HeartbeatTask(this);                                                // Initialize heartbeat
 		
 	}
 
@@ -76,9 +90,13 @@ public class PlayGridMC extends JavaPlugin {
 		
 		// TODO: (JP) Disable Listeners & Tasks
 
+		if (game == null) {                                                     // Exit if never connected game
+			return;
+		}
+
 		GameManager gameManager = RestAPI.getInstance().getGamesManager();
 
-		GameResponse gameResponse = gameManager.disconnect();                   // Disconnect Game
+		GameResponse gameResponse = gameManager.disconnect();                   // Disconnect game
 		game = gameResponse.resources;
 		getLogger().info(String.format("Disconnected game: %s", game.name));
 
