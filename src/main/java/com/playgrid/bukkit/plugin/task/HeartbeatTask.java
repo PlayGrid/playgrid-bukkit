@@ -23,8 +23,13 @@ public class HeartbeatTask extends BukkitRunnable {
 	@Override
 	public void run() {
 		
+		if (plugin.getConfig().getBoolean("debug")) {
+			StringBuilder builder = new StringBuilder("Heartbeat - Online Players: ");
+			builder.append(plugin.getServer().getOnlinePlayers().length);
+
+			plugin.getLogger().info(builder.toString());
 		
-		plugin.getLogger().info(String.format("Heartbeat - Online Players: %s", plugin.getServer().getOnlinePlayers().length));
+		}
 
 		GameManager gameManager = RestAPI.getInstance().getGamesManager();
 		gameManager.heartbeat();
