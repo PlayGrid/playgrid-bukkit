@@ -43,9 +43,14 @@ public class PlayGridMC extends JavaPlugin {
 		RestAPI.getConfig().setAccessToken(pgp.get("secret_key"));              // Setup API
 		RestAPI.getConfig().setURL(pgp.get("url"));
 		RestAPI.getConfig().setVersion(pgp.get("version"));
+		
+		StringBuilder uaBuilder = new StringBuilder(getDescription().getName());
+		uaBuilder.append("/" + getDescription().getVersion());
+		RestAPI.getConfig().appendUserAgent(uaBuilder.toString());
 
     }
 
+	
 	
 	/**
 	 * Enable PlayGridMC Plugin
