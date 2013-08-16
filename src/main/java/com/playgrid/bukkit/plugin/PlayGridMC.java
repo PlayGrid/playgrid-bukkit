@@ -30,7 +30,7 @@ public class PlayGridMC extends JavaPlugin {
 	 */
 	@Override
     public void onLoad() {
-    	
+		
 		getConfig().options().copyDefaults(true);                               // Get configuration
 		saveDefaultConfig();
 
@@ -58,31 +58,39 @@ public class PlayGridMC extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		
-		permissions = new Permissions(this);                                    // Initialize features
+		try {
+			
+			permissions = new Permissions(this);                                // Initialize features
 
-		if (getConfig().getString("pgp.secret_key") == null) {                  // Confirm secret_key
-			StringBuilder builder = new StringBuilder();
-			builder.append(ChatColor.RED);
-			builder.append("[PlayGridMC] Config.yml property 'secret_key' is missing. "); 
-			builder.append("Set your 'secret_key' to your key on playgrid.com -> Admin -> Plugin.");
+			if (getConfig().getString("pgp.secret_key") == null) {              // Confirm secret_key
+				StringBuilder builder = new StringBuilder();
+				builder.append(ChatColor.RED);
+				builder.append("[PlayGridMC] Config.yml property 'secret_key' is missing. "); 
+				builder.append("Set your 'secret_key' to your key on playgrid.com -> Admin -> Plugin.");
+				
+				getServer().getConsoleSender().sendMessage(builder.toString());
+				
+				getServer().getPluginManager().disablePlugin(this);
+				return;
 			
-			getServer().getConsoleSender().sendMessage(builder.toString());
+			}
 			
+			GameManager gameManager = RestAPI.getInstance().getGamesManager();
+
+			GameResponse gameResponse = gameManager.connect();                  // Connect game
+			game = gameResponse.resources;
+			getLogger().info(String.format("Connected as %s", game.name));
+
+
+			new PlayerConnectionListener(this);                                 // Initialize listeners
+			new HeartbeatTask(this);                                            // Initialize heartbeat
+			
+		} catch (Exception e) {
+			getLogger().severe(e.getMessage());
 			getServer().getPluginManager().disablePlugin(this);
-			return;
 		
 		}
-		
-		GameManager gameManager = RestAPI.getInstance().getGamesManager();
-
-		GameResponse gameResponse = gameManager.connect();                      // Connect game // TODO (JP): What happens with bad token or gets a 404?
-		game = gameResponse.resources;
-		getLogger().info(String.format("Connected as %s", game.name));
-
-
-		new PlayerConnectionListener(this);                                     // Initialize listeners
-		new HeartbeatTask(this);                                                // Initialize heartbeat
-		
+    	
 	}
 
 	
@@ -93,17 +101,24 @@ public class PlayGridMC extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		
-		// TODO: (JP) Disable Listeners & Tasks
+		try {
+			
+			// TODO: (JP) Disable Listeners & Tasks
+	
+			if (game == null) {                                                 // Exit if never connected game
+				return;
+			}
+	
+			GameManager gameManager = RestAPI.getInstance().getGamesManager();
+	
+			GameResponse gameResponse = gameManager.disconnect();               // Disconnect game
+			game = gameResponse.resources;
+			getLogger().info(String.format("Disconnected game: %s", game.name));
 
-		if (game == null) {                                                     // Exit if never connected game
-			return;
+		} catch (Exception e) {
+			getLogger().severe(e.getMessage());
+		
 		}
-
-		GameManager gameManager = RestAPI.getInstance().getGamesManager();
-
-		GameResponse gameResponse = gameManager.disconnect();                   // Disconnect game
-		game = gameResponse.resources;
-		getLogger().info(String.format("Disconnected game: %s", game.name));
 
 	}
 	
