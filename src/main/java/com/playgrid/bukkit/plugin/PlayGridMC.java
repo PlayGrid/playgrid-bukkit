@@ -132,14 +132,15 @@ public class PlayGridMC extends JavaPlugin {
 		config.set("pgp.url", url);
 		config.set("api_base", null);
 		
-		String authorization_required = (config.getString("player_status.none.action") == "allow") ? "true" : "false";
+		String action = config.getString("player_status.none.action");
+		boolean authorization_required = ("kick".equals(action)) ? true : false;
 		config.set("player.authorization_required", authorization_required);
 		
 		config.set("player.status", config.getConfigurationSection("player_status"));
 		config.set("player_status", null);
 		
-		// Backup config.yml file
-		// Save
+		// TODO (JP): Backup config.yml file
+		// TODO (JP): Save
 		
 		return config;
     }

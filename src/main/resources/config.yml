@@ -12,10 +12,10 @@ pgp.secret_key:
 ##
 ## Player Authorization
 ## Require PlayGrid authorized players
-##  - true (default): Require PlayGrid authorized players
-##  - false: Allow unauthorized players
+##  - true: Require PlayGrid authorized players
+##  - false (default): Allow unauthorized players
 
-player.authorization_required: true
+player.authorization_required: false
 
 
 ## Player Status
