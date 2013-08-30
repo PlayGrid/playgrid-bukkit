@@ -1,4 +1,4 @@
-package com.playgrid.bukkit.plugin.permissions;
+package com.playgrid.bukkit.plugin.permission;
 
 import java.util.ArrayList;
 import java.util.List;

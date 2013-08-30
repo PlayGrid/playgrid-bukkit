@@ -4,3 +4,8 @@ version: ${project.version}
 author: PlayGrid
 description: PlayGrid Bukkit Plugin
 softdepend: [Vault]
+
+commands:
+  register:
+    description: Register with the server.
+    usage: /<command> <email>

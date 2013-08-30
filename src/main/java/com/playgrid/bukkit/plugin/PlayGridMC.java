@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -12,8 +13,9 @@ import com.playgrid.api.client.manager.GameManager;
 import com.playgrid.api.entity.Game;
 import com.playgrid.api.entity.GameResponse;
 import com.playgrid.api.entity.Player;
+import com.playgrid.bukkit.plugin.command.RegisterCommandExecutor;
 import com.playgrid.bukkit.plugin.listener.PlayerConnectionListener;
-import com.playgrid.bukkit.plugin.permissions.Permissions;
+import com.playgrid.bukkit.plugin.permission.Permissions;
 import com.playgrid.bukkit.plugin.task.HeartbeatTask;
 
 
@@ -75,6 +77,20 @@ public class PlayGridMC extends JavaPlugin {
 			
 			}
 			
+			try {
+				CommandExecutor cmd = new RegisterCommandExecutor(this);        // Initialize commands
+				getCommand("register").setExecutor(cmd);
+				
+			} catch (NullPointerException e) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(ChatColor.RED);
+				builder.append("[PlayGridMC] There was a problem enabling commands."); 
+				getServer().getConsoleSender().sendMessage(builder.toString());
+				
+				throw e;
+			
+			}
+				
 			GameManager gameManager = RestAPI.getInstance().getGamesManager();
 
 			GameResponse gameResponse = gameManager.connect();                  // Connect game
