@@ -14,6 +14,9 @@ pgp.secret_key:
 ## Require PlayGrid authorized players
 ##  - true: Require PlayGrid authorized players
 ##  - false (default): Allow unauthorized players
+##
+## Note: A 'true' value will override player.status.none.action and essentially 'kick' all unauthorized players 
+##       
 
 player.authorization_required: false
 
@@ -37,7 +40,7 @@ player.status:
     ## Player does not have an account
     none:
         action: allow
-        message: Please sign up at $game_site$ <-- click> to gain member status and enable additional features. 
+        message: Please sign up using the /register command or online at $game_site$ <-- click> to gain member status and enable additional features. 
 
     ## Player has signed up but has not verified their account email
     unverified:
