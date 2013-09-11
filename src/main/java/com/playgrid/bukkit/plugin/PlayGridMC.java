@@ -10,9 +10,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.playgrid.api.client.RestAPI;
 import com.playgrid.api.client.manager.GameManager;
+import com.playgrid.api.client.manager.PlayerManager;
 import com.playgrid.api.entity.Game;
 import com.playgrid.api.entity.GameResponse;
 import com.playgrid.api.entity.Player;
+import com.playgrid.api.entity.PlayerResponse;
 import com.playgrid.bukkit.plugin.command.RegisterCommandExecutor;
 import com.playgrid.bukkit.plugin.listener.PlayerConnectionListener;
 import com.playgrid.bukkit.plugin.permission.Permissions;
@@ -181,10 +183,33 @@ public class PlayGridMC extends JavaPlugin {
 	 * Store Player in the activePlayers cache
 	 * @param player
 	 */
-	public void addPlayer(Player player) {
+	public void setPlayer(Player player) {
 		
 		activePlayers.put(player.name, player);
 
+	}
+	
+	
+	
+	/**
+	 * Reload Player and recache the PlayGrid Player
+	 * @param player_token
+	 * @return Player
+	 */
+	public Player reloadPlayer(String player_token) {
+		
+		PlayerManager playerManager = RestAPI.getInstance().getPlayerManager();
+
+		Player player = getPlayer(player_token);
+		if (player == null ) {
+			return null;
+		}
+		PlayerResponse response = playerManager.reload(player);
+		player = response.resources;
+		setPlayer(player);
+		
+		return player;
+	
 	}
 
 	

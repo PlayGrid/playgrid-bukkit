@@ -104,7 +104,7 @@ public class PlayerConnectionListener implements Listener {
 			}
 			
 			if (statusConfig.get("action").toString().equalsIgnoreCase("allow")) {
-				plugin.addPlayer(pPlayer);
+				plugin.setPlayer(pPlayer);
 				
 			} else {
 				event.disallow(result, message);
@@ -137,7 +137,7 @@ public class PlayerConnectionListener implements Listener {
 				return;
 			}
 			pPlayer = join(pPlayer);
-			plugin.addPlayer(pPlayer);
+			plugin.setPlayer(pPlayer);
 				
 			Map<String, Object> statusConfig = getPlayerStatusConfig(pPlayer);
 	
