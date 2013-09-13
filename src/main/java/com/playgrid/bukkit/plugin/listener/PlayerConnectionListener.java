@@ -1,7 +1,9 @@
 package com.playgrid.bukkit.plugin.listener;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.NotFoundException;
 
@@ -164,9 +166,19 @@ public class PlayerConnectionListener implements Listener {
 			
 			event.getPlayer().sendMessage(message);
 	
-			plugin.permissions.setGroups(event.getPlayer(), pPlayer.permission_groups);
+			String[] permission_groups = pPlayer.permission_groups;
+
+			String config_group = (String) statusConfig.get("group");
+			if (config_group != null) {
+				Set<String> groupSet;
+				groupSet = new HashSet<String>(Arrays.asList(permission_groups));
+				groupSet.add(config_group);
+				permission_groups = groupSet.toArray(new String[0]);
+			}
+				
+			plugin.permissions.setGroups(event.getPlayer(), permission_groups);
 			
-			plugin.getLogger().info(pPlayer.name + " joined and was added to the " + Arrays.toString(pPlayer.permission_groups) + " groups.");
+			plugin.getLogger().info(pPlayer.name + " joined and was added to the " + Arrays.toString(permission_groups) + " groups.");
 		
 		} catch (Exception e) {
 			plugin.getLogger().severe(e.getMessage());
