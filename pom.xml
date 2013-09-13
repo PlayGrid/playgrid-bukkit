@@ -26,18 +26,22 @@
       <id>vault-repo</id>
       <url>http://ci.herocraftonline.com/plugin/repository/everything/</url>
     </repository>
+    <repository>
+      <id>stats-repo</id>
+      <url>http://centrility.nl:8081/nexus/content/repositories/releases/</url>
+    </repository>
   </repositories>
 
   <dependencies>
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.6.2-R0.1-SNAPSHOT</version>
+      <version>1.6.2-R1.0</version>
     </dependency>
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>craftbukkit</artifactId>
-      <version>1.6.2-R0.1-SNAPSHOT</version>
+      <version>1.6.2-R1.0</version>
     </dependency>
     <dependency>
       <groupId>joda-time</groupId>
@@ -53,7 +57,27 @@
     <dependency>
     	<groupId>com.playgrid</groupId>
     	<artifactId>pgp-java-sdk</artifactId>
-    	<version>1.0.2-SNAPSHOT</version>
+    	<version>1.0.2</version>
+    </dependency>
+    <dependency>
+    	<groupId>nl.lolmewn.stats</groupId>
+    	<artifactId>Stats</artifactId>
+    	<version>1.29</version>
+    	<scope>runtime</scope>
+    	<exclusions>
+    		<exclusion>
+    			<artifactId>AuthMe</artifactId>
+    			<groupId>uk.org.whoami.authme.AuthMe</groupId>
+    		</exclusion>
+    		<exclusion>
+    			<artifactId>votifier</artifactId>
+    			<groupId>dev.bukkit.org.server-mods</groupId>
+    		</exclusion>
+    		<exclusion>
+    			<artifactId>beardstat</artifactId>
+    			<groupId>dev.bukkit.org.server-mods</groupId>
+    		</exclusion>
+    	</exclusions>
     </dependency>
   </dependencies>
 

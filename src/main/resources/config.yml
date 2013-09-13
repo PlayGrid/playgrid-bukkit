@@ -15,10 +15,16 @@ pgp.secret_key:
 ##  - true: Require PlayGrid authorized players
 ##  - false (default): Allow unauthorized players
 ##
-## Note: A 'true' value will override player.status.none.action and essentially 'kick' all unauthorized players 
+## Note: A 'true' value will override player.status.none.action and 'kick' all unauthorized players 
 ##       
 
 player.authorization_required: false
+
+
+## Player Stats
+##  - Requires Lolmewn's Stats plugin [http://dev.bukkit.org/bukkit-plugins/lolmewnstats/]
+#
+# player.disable_stats: false
 
 
 ## Player Status

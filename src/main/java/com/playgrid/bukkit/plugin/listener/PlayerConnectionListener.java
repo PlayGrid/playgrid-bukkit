@@ -131,11 +131,11 @@ public class PlayerConnectionListener implements Listener {
 			String player_token = event.getPlayer().getName();
 			Player pPlayer = plugin.getPlayer(player_token);
 			
-			// TODO: (JP) Send Stats
-			
 			if (pPlayer == null) {
 				return;
+
 			}
+			
 			pPlayer = join(pPlayer);
 			plugin.setPlayer(pPlayer);
 				
@@ -185,8 +185,6 @@ public class PlayerConnectionListener implements Listener {
 			String player_token = event.getPlayer().getName();
 			Player pPlayer = plugin.removePlayer(player_token);
 			
-			// TODO: (JP) Send Stats
-			
 			pPlayer = quit(pPlayer);
 	
 			plugin.getLogger().info(pPlayer.name + " has left.");
@@ -220,7 +218,9 @@ public class PlayerConnectionListener implements Listener {
 		
 		PlayerManager playerManager = RestAPI.getInstance().getPlayerManager();
 
-		PlayerResponse response = playerManager.join(player);
+		String json_stats_payload = plugin.stats.getPlayerStats(player.name);	// Get player stats
+		
+		PlayerResponse response = playerManager.join(player, json_stats_payload);
 		return response.resources;
 		
 	}
@@ -233,7 +233,9 @@ public class PlayerConnectionListener implements Listener {
 		}
 		PlayerManager playerManager = RestAPI.getInstance().getPlayerManager();
 		
-		PlayerResponse response = playerManager.quit(player);
+		String json_stats_payload = plugin.stats.getPlayerStats(player.name);	// Get player stats
+		
+		PlayerResponse response = playerManager.quit(player, json_stats_payload);
 		return response.resources;
 		
 	}

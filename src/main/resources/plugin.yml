@@ -3,7 +3,7 @@ name: PlayGridMC
 version: ${project.version}
 author: PlayGrid
 description: PlayGrid Bukkit Plugin
-softdepend: [Vault]
+softdepend: [Vault, Stats]
 
 commands:
   register:

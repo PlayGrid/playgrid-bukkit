@@ -18,6 +18,7 @@ import com.playgrid.api.entity.PlayerResponse;
 import com.playgrid.bukkit.plugin.command.RegisterCommandExecutor;
 import com.playgrid.bukkit.plugin.listener.PlayerConnectionListener;
 import com.playgrid.bukkit.plugin.permission.Permissions;
+import com.playgrid.bukkit.plugin.stats.Stats;
 import com.playgrid.bukkit.plugin.task.HeartbeatTask;
 
 
@@ -25,6 +26,7 @@ public class PlayGridMC extends JavaPlugin {
 
 	public Game game;
 	public Permissions permissions;
+	public Stats stats;
 
 	private final Map<String, Player> activePlayers = new HashMap<String, Player>();
 	
@@ -65,7 +67,8 @@ public class PlayGridMC extends JavaPlugin {
 		try {
 			
 			permissions = new Permissions(this);                                // Initialize features
-
+			stats = new Stats(this); 
+			
 			if (getConfig().getString("pgp.secret_key") == null) {              // Confirm secret_key
 				StringBuilder builder = new StringBuilder();
 				builder.append(ChatColor.RED);
@@ -164,6 +167,9 @@ public class PlayGridMC extends JavaPlugin {
 		String url = config.getString("api_base");                              // FIXME (JP): Process URL scheme
 		config.set("pgp.url", url);
 		config.set("api_base", null);
+		
+		config.set("player.disable_stats", !config.getBoolean("track_stats"));
+		config.set("track_stats", null);
 		
 		String action = config.getString("player_status.none.action");
 		boolean authorization_required = ("kick".equals(action)) ? true : false;
