@@ -53,8 +53,8 @@ public class Permissions {
 	
 	
 	/**
-	 * Is Enabled
-	 * @return boolean
+	 * Is enabled
+	 * @return	enabled status boolean
 	 */
 	private boolean isEnabled() {
 		if (provider != null && enabled) {
@@ -67,8 +67,8 @@ public class Permissions {
 	
 	
 	/**
-	 * Disable Permissions
-	 * @param reason
+	 * Disable permissions
+	 * @param	reason	reason for disabling permissions
 	 */
 	private void disable(String reason) {
 		plugin.getLogger().warning("Disabling permissions support: " + reason);
@@ -78,10 +78,10 @@ public class Permissions {
 	
 	
 	/**
-	 * Add Groups
-	 * @param player
-	 * @param groups
-	 * @return boolean
+	 * Add groups to player
+	 * @param 	player	player to add groups too
+	 * @param 	groups	groups to add to player
+	 * @return 			success boolean
 	 */
 	public boolean addGroups(Player player, String[] groups) {
 		if (!isEnabled()) { return false; }
@@ -100,7 +100,11 @@ public class Permissions {
 		String successMsg = String.format("[PlayGrid] You have been added to the %s groups", successList);
 		String failMsg = String.format("[PlayGrid] Failed to add you to the %s groups", failList);
 
-		player.sendMessage(ChatColor.GREEN + successMsg);
+		if (successList.size() > 0) {
+			player.sendMessage(ChatColor.GREEN + successMsg);
+			
+		}
+
 		if (failList.size() > 0) {
 			player.sendMessage(ChatColor.RED + failMsg);
 			return false;
@@ -114,10 +118,10 @@ public class Permissions {
 	
 	
 	/**
-	 * Set Groups - removes all groups before adding provided groups
-	 * @param player
-	 * @param groups
-	 * @return boolean
+	 * Set groups removes all groups before adding provided groups
+	 * @param 	player	player to add groups too
+	 * @param 	groups	groups to add to player
+	 * @return 			success boolean
 	 */
 	public boolean setGroups(Player player, String[] groups) {
 		if (!isEnabled()) { return false; }
@@ -129,9 +133,9 @@ public class Permissions {
 	
 	
 	/**
-	 * Remove Groups
-	 * @param player
-	 * @return boolean
+	 * Remove groups from player
+	 * @param 	player	player to remove all groups from	
+	 * @return 			success boolean
 	 */
 	public boolean removeGroups(Player player) {
 		if (!isEnabled()) { return false; }
@@ -155,10 +159,10 @@ public class Permissions {
 	
 	
 	/**
-	 * Add Group
-	 * @param player
-	 * @param group
-	 * @return boolean
+	 * Add group to player
+	 * @param 	player 	player to add group to
+	 * @param 	group 	group to add to player
+	 * @return 			success boolean
 	 */
 	public boolean addGroup(Player player, String group) {
 		if (!isEnabled()) { return false; }
@@ -178,10 +182,10 @@ public class Permissions {
 	
 	
 	/**
-	 * Remove Group
-	 * @param player
-	 * @param group
-	 * @return boolean
+	 * Remove group from player
+	 * @param	player	player to remove group from
+	 * @param 	group	group to remove from player
+	 * @return 			success boolean
 	 */
 	public boolean removeGroup(Player player, String group) {
 		if (!isEnabled()) { return false; }
