@@ -141,18 +141,173 @@
           <minimizeJar>true</minimizeJar>
           <finalName>${project.build.finalName}</finalName>
           <artifactSet>
+
             <includes>
-              <include>com.playgrid:pgp-java-sdk:jar:*</include>
+              <include>com.playgrid:pgp-java-sdk:*</include>
+              <include>commons-codec:commons-codec:*</include>
+              <include>commons-logging:commons-logging:*</include>
+              <include>javax.annotation:javax.annotation-api:*</include>
+              <include>javax.ws.rs:javax.ws.rs-api:*</include>
               <include>joda-time:*</include>
+              <include>org.apache.httpcomponents:*</include>
+              <!-- <include>org.bukkit:craftbukkit:*</include> -->
+              <include>org.eclipse.persistence:*</include>
+              <include>org.glassfish.hk2:*</include>
+              <include>org.glassfish.hk2.external:*</include>
+              <include>org.glassfish.jersey.connectors:jersey-apache-connector:*</include>
+              <include>org.glassfish.jersey.core:*</include>
+              <include>org.glassfish.jersey.media:jersey-media-moxy:*</include>
             </includes>
+            <excludes>
+              <exclude>com.google.guava:guava</exclude>
+            </excludes>
           </artifactSet>
           <filters>
+
+<!-- 
             <filter>
               <artifact>com.playgrid:pgp-java-sdk</artifact>
               <includes>
                 <include>**</include>
               </includes>
-            </filter>     
+            </filter>
+ -->
+<!-- 
+            <filter>
+              <artifact>commons-codec:commons-codec</artifact>
+              <includes>
+                <include>**</include>
+              </includes>
+            </filter>
+ -->
+
+            <filter>
+              <artifact>commons-logging:commons-logging</artifact>
+              <includes>
+                <include>org/apache/commons/logging/**</include>
+              </includes>
+            </filter>
+
+<!-- 
+            <filter>
+              <artifact>javax.annotation:javax.annotation-api</artifact>
+              <includes>
+                <include>**</include>
+              </includes>
+            </filter>
+ -->
+<!-- 
+            <filter>
+              <artifact>javax.ws.rs:javax.ws.rs-api</artifact>
+              <includes>
+                <include>**</include>
+              </includes>
+            </filter>
+ -->
+<!-- 
+            <filter>
+              <artifact>joda-time:*</artifact>
+              <includes>
+                <include>**</include>
+              </includes>
+            </filter>
+ -->
+<!-- 
+            <filter>
+              <artifact>org.apache.httpcomponents:*</artifact>
+              <includes>
+                <include>**</include>
+              </includes>
+            </filter>
+ -->
+ 
+            <filter>
+              <artifact>org.eclipse.persistence:*</artifact>
+              <includes>
+                <include>org/eclipse/persistence/**</include>
+                <include>org/eclipse/persistence/core/descriptors/**</include>
+                <include>org/eclipse/persistence/core/mappings/**</include>
+                <include>org/eclipse/persistence/core/queries/**</include>
+                <include>org/eclipse/persistence/core/sessions/**</include>
+                <include>org/eclipse/persistence/descriptors/**</include>
+                <include>org/eclipse/persistence/exceptions/**</include>
+                <include>org/eclipse/persistence/expressions/**</include>
+                <include>org/eclipse/persistence/indirection/**</include>
+                <include>org/eclipse/persistence/internal/core/databaseaccess/**</include>
+                <include>org/eclipse/persistence/internal/core/descriptors/**</include>
+                <include>org/eclipse/persistence/internal/core/helper/**</include>
+                <include>org/eclipse/persistence/internal/core/queries/**</include>
+                <include>org/eclipse/persistence/internal/core/sessions/**</include>
+                <include>org/eclipse/persistence/internal/databaseaccess/**</include>
+                <include>org/eclipse/persistence/internal/descriptors/**</include>
+                <include>org/eclipse/persistence/internal/expressions/**</include>
+                <include>org/eclipse/persistence/internal/helper/**</include>
+                <include>org/eclipse/persistence/internal/identitymaps/**</include>
+                <include>org/eclipse/persistence/internal/indirection/**</include>
+                <include>org/eclipse/persistence/internal/jaxb/**</include>
+                <include>org/eclipse/persistence/internal/localization/**</include>
+                <include>org/eclipse/persistence/internal/queries/**</include>
+                <include>org/eclipse/persistence/internal/security/**</include>
+                <include>org/eclipse/persistence/internal/sessions/**</include>
+                <include>org/eclipse/persistence/internal/oxm/**</include>
+                <include>org/eclipse/persistence/internal/oxm/schema/**</include>
+                <include>org/eclipse/persistence/internal/weaving/**</include>
+                <include>org/eclipse/persistence/jaxb/**</include>
+                <include>org/eclipse/persistence/logging/**</include>
+                <include>org/eclipse/persistence/mappings/**</include>
+                <include>org/eclipse/persistence/mappings/converters/**</include>
+                <include>org/eclipse/persistence/mappings/foundation/**</include>
+                <include>org/eclipse/persistence/oxm/**</include>
+                <include>org/eclipse/persistence/oxm/platform/**</include>
+                <include>org/eclipse/persistence/platform/server/**</include>
+                <include>org/eclipse/persistence/platform/xml/**</include>
+                <include>org/eclipse/persistence/queries/**</include>
+                <include>org/eclipse/persistence/sessions/**</include>
+                <include>org/eclipse/persistence/tools/profiler/**</include>
+              </includes>
+            </filter>
+
+<!-- 
+            <filter>
+              <artifact>org.glassfish.hk2:*</artifact>
+              <includes>
+                <include>**</include>
+              </includes>
+            </filter>
+ -->
+<!-- 
+            <filter>
+              <artifact>org.glassfish.hk2.external:*</artifact>
+              <includes>
+                <include>**</include>
+              </includes>
+            </filter>
+ -->
+<!-- 
+            <filter>
+              <artifact>org.glassfish.jersey.connectors:jersey-apache-connector</artifact>
+              <includes>
+                <include>**</include>
+              </includes>
+            </filter>
+ -->
+
+            <filter>
+              <artifact>org.glassfish.jersey.core:*</artifact>
+              <includes>
+                <include>org/glassfish/jersey/**</include>
+              </includes>
+            </filter>
+
+
+            <filter>
+              <artifact>org.glassfish.jersey.media:jersey-media-moxy</artifact>
+              <includes>
+                <include>**</include>
+              </includes>
+            </filter>
+
+
             <filter>
               <artifact>*:*</artifact>
               <excludes>
