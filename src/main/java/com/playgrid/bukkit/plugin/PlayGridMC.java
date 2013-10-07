@@ -53,7 +53,7 @@ public class PlayGridMC extends JavaPlugin {
 		StringBuilder uaBuilder = new StringBuilder(getDescription().getName());
 		uaBuilder.append("/" + getDescription().getVersion());
 		RestAPI.getConfig().appendUserAgent(uaBuilder.toString());
-
+		
     }
 
 	
@@ -105,7 +105,7 @@ public class PlayGridMC extends JavaPlugin {
 
 			new PlayerConnectionListener(this);                                 // Initialize listeners
 			new HeartbeatTask(this);                                            // Initialize heartbeat
-			
+						
 		} catch (Exception e) {
 			getLogger().severe(e.getMessage());
 			getServer().getPluginManager().disablePlugin(this);

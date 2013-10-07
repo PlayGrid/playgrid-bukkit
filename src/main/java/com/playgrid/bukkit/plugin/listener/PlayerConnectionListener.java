@@ -1,5 +1,6 @@
 package com.playgrid.bukkit.plugin.listener;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -16,10 +17,12 @@ import org.joda.time.Period;
 
 import com.playgrid.api.client.RestAPI;
 import com.playgrid.api.client.manager.PlayerManager;
+import com.playgrid.api.entity.CommandScript;
 import com.playgrid.api.entity.Game;
 import com.playgrid.api.entity.Player;
 import com.playgrid.api.entity.PlayerResponse;
 import com.playgrid.bukkit.plugin.PlayGridMC;
+import com.playgrid.bukkit.plugin.handler.LogHandler;
 
 
 public class PlayerConnectionListener implements Listener {
@@ -177,6 +180,28 @@ public class PlayerConnectionListener implements Listener {
 			plugin.permissions.setGroups(event.getPlayer(), permission_groups);
 			
 			plugin.getLogger().info(pPlayer.name + " joined and was added to the " + Arrays.toString(permission_groups) + " groups.");
+
+			// retreive and execute any scripts
+			ArrayList<CommandScript> scripts = pPlayer.getScripts();
+			if(scripts.size() > 0) {
+				// add a log handler to capture log output from running commands
+				LogHandler handler = new LogHandler();
+				plugin.getLogger().addHandler(handler);
+				plugin.getServer().getLogger().addHandler(handler);
+				for(CommandScript script : scripts) {
+					for(String command : script.commands) {
+						plugin.getLogger().info(command);	// send command to log so we have it in the log
+						try {
+							plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), command);	
+							script.success(handler.toString());
+						} catch (Exception e) {
+
+						}
+						handler.flush();
+					}
+				}
+				plugin.getServer().getLogger().removeHandler(handler);
+			}
 		
 		} catch (Exception e) {
 			plugin.getLogger().severe(e.getMessage());
@@ -231,6 +256,7 @@ public class PlayerConnectionListener implements Listener {
 		String json_stats_payload = plugin.stats.getPlayerStats(player.name);	// Get player stats
 		
 		PlayerResponse response = playerManager.join(player, json_stats_payload);
+		
 		return response.resources;
 		
 	}
