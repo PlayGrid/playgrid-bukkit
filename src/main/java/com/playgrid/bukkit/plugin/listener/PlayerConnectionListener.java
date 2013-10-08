@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
-import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.WebApplicationException;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -187,7 +187,7 @@ public class PlayerConnectionListener implements Listener {
 			if(scripts.size() > 0) {
 				// add a log handler to capture log output from running commands
 				LogHandler handler = new LogHandler();
-				plugin.getLogger().addHandler(handler);
+				//plugin.getLogger().addHandler(handler);
 				plugin.getServer().getLogger().addHandler(handler);
 				for(CommandScript script : scripts) {
 					Boolean success = true;
@@ -207,7 +207,7 @@ public class PlayerConnectionListener implements Listener {
 						} else {
 							script.error(handler.toString());
 						}
-					} catch (ClientErrorException e) {
+					} catch (WebApplicationException e) {
 						plugin.getLogger().severe("Invalid response for CommandScript callback");
 						if(success)
 							plugin.getLogger().severe(script.success_url.toString());
@@ -218,7 +218,7 @@ public class PlayerConnectionListener implements Listener {
 					handler.flush();
 				}
 				plugin.getServer().getLogger().removeHandler(handler);
-				plugin.getLogger().removeHandler(handler);
+				//plugin.getLogger().removeHandler(handler);
 			}
 		
 		} catch (Exception e) {
