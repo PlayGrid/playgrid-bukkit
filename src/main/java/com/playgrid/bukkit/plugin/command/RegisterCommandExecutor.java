@@ -64,7 +64,6 @@ public class RegisterCommandExecutor implements CommandExecutor {
 		
 		} catch (BadRequestException e) {
 			bPlayer.sendMessage("Invalid email address, please try again");
-			e.getResponse().close();
 			return false;
 		}
 		

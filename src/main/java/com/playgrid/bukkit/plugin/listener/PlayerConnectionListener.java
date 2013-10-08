@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.NotFoundException;
 
 import org.bukkit.event.EventHandler;
@@ -189,23 +190,39 @@ public class PlayerConnectionListener implements Listener {
 				plugin.getLogger().addHandler(handler);
 				plugin.getServer().getLogger().addHandler(handler);
 				for(CommandScript script : scripts) {
+					Boolean success = true;
 					for(String command : script.commands) {
-						plugin.getLogger().info(command);	// send command to log so we have it in the log
 						try {
+							plugin.getLogger().info(command);	// send command to log so we have it in the log
 							plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), command);	
-							script.success(handler.toString());
 						} catch (Exception e) {
-
+							plugin.getLogger().warning(e.toString());
+							success = false;
+							break;
 						}
-						handler.flush();
 					}
+					try {
+						if(success) {
+							script.success(handler.toString());
+						} else {
+							script.error(handler.toString());
+						}
+					} catch (ClientErrorException e) {
+						plugin.getLogger().severe("Invalid response for CommandScript callback");
+						if(success)
+							plugin.getLogger().severe(script.success_url.toString());
+						else
+							plugin.getLogger().severe(script.error_url.toString());
+						plugin.getLogger().severe(e.getMessage());
+					}
+					handler.flush();
 				}
 				plugin.getServer().getLogger().removeHandler(handler);
+				plugin.getLogger().removeHandler(handler);
 			}
 		
 		} catch (Exception e) {
 			plugin.getLogger().severe(e.getMessage());
-		
 		}
 
 	}
