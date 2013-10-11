@@ -19,7 +19,7 @@ import com.playgrid.api.client.RestAPI;
 import com.playgrid.api.client.manager.PlayerManager;
 import com.playgrid.api.entity.CommandScript;
 import com.playgrid.api.entity.Game;
-import com.playgrid.api.entity.PendingOrderLine;
+import com.playgrid.api.entity.OrderLine;
 import com.playgrid.api.entity.Player;
 import com.playgrid.api.entity.PlayerResponse;
 import com.playgrid.bukkit.plugin.PlayGridMC;
@@ -188,10 +188,10 @@ public class PlayerConnectionListener implements Listener {
 			}
 			
 			// retrieve and execute any order lines
-			ArrayList<PendingOrderLine> lines = pPlayer.getLines();
-			for(PendingOrderLine line : lines) {
+			ArrayList<OrderLine> lines = pPlayer.getLines();
+			for(OrderLine line : lines) {
 				org.bukkit.entity.Player bPlayer = event.getPlayer();
-				plugin.executePendingOrderLine(bPlayer, line);
+				plugin.executeOrderLine(bPlayer, line);
 			}
 		
 		} catch (Exception e) {
