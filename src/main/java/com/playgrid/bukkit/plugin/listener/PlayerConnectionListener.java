@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
-import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.NotFoundException;
 
 import org.bukkit.event.EventHandler;
@@ -20,10 +19,10 @@ import com.playgrid.api.client.RestAPI;
 import com.playgrid.api.client.manager.PlayerManager;
 import com.playgrid.api.entity.CommandScript;
 import com.playgrid.api.entity.Game;
+import com.playgrid.api.entity.OrderLine;
 import com.playgrid.api.entity.Player;
 import com.playgrid.api.entity.PlayerResponse;
 import com.playgrid.bukkit.plugin.PlayGridMC;
-import com.playgrid.bukkit.plugin.handler.LogHandler;
 
 
 public class PlayerConnectionListener implements Listener {
@@ -182,43 +181,17 @@ public class PlayerConnectionListener implements Listener {
 			
 			plugin.getLogger().info(pPlayer.name + " joined and was added to the " + Arrays.toString(permission_groups) + " groups.");
 
-			// retreive and execute any scripts
+			// retrieve and execute any scripts
 			ArrayList<CommandScript> scripts = pPlayer.getScripts();
-			if(scripts.size() > 0) {
-				// add a log handler to capture log output from running commands
-				LogHandler handler = new LogHandler();
-				plugin.getLogger().addHandler(handler);
-				plugin.getServer().getLogger().addHandler(handler);
-				for(CommandScript script : scripts) {
-					Boolean success = true;
-					for(String command : script.commands) {
-						try {
-							plugin.getLogger().info(command);	// send command to log so we have it in the log
-							plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), command);	
-						} catch (Exception e) {
-							plugin.getLogger().warning(e.toString());
-							success = false;
-							break;
-						}
-					}
-					try {
-						if(success) {
-							script.success(handler.toString());
-						} else {
-							script.error(handler.toString());
-						}
-					} catch (ClientErrorException e) {
-						plugin.getLogger().severe("Invalid response for CommandScript callback");
-						if(success)
-							plugin.getLogger().severe(script.success_url.toString());
-						else
-							plugin.getLogger().severe(script.error_url.toString());
-						plugin.getLogger().severe(e.getMessage());
-					}
-					handler.flush();
-				}
-				plugin.getServer().getLogger().removeHandler(handler);
-				plugin.getLogger().removeHandler(handler);
+			for(CommandScript script : scripts) {
+				plugin.executeCommandScript(script);
+			}
+			
+			// retrieve and execute any order lines
+			ArrayList<OrderLine> lines = pPlayer.getLines();
+			for(OrderLine line : lines) {
+				org.bukkit.entity.Player bPlayer = event.getPlayer();
+				plugin.executeOrderLine(bPlayer, line);
 			}
 		
 		} catch (Exception e) {

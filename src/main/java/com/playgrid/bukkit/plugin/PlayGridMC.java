@@ -1,9 +1,11 @@
 package com.playgrid.bukkit.plugin;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -11,11 +13,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.playgrid.api.client.RestAPI;
 import com.playgrid.api.client.manager.GameManager;
 import com.playgrid.api.client.manager.PlayerManager;
+import com.playgrid.api.entity.CommandScript;
 import com.playgrid.api.entity.Game;
 import com.playgrid.api.entity.GameResponse;
+import com.playgrid.api.entity.OrderLine;
 import com.playgrid.api.entity.Player;
 import com.playgrid.api.entity.PlayerResponse;
 import com.playgrid.bukkit.plugin.command.RegisterCommandExecutor;
+import com.playgrid.bukkit.plugin.handler.LogHandler;
 import com.playgrid.bukkit.plugin.listener.PlayerConnectionListener;
 import com.playgrid.bukkit.plugin.permission.Permissions;
 import com.playgrid.bukkit.plugin.stats.Stats;
@@ -244,4 +249,59 @@ public class PlayGridMC extends JavaPlugin {
 		
 	}
 	
+	/**
+	 * Execute a list of commands
+	 * @param commands
+	 * @return console log as string
+	 */
+	public String executeCommands(ArrayList<String> commands) throws CommandException {
+		// add a log handler to capture log output from running commands
+		LogHandler handler = new LogHandler();
+		getServer().getLogger().addHandler(handler);
+		for(String command : commands) {
+			try {
+				getLogger().info(command);	// send command to log so we have it in the log
+				getServer().dispatchCommand(getServer().getConsoleSender(), command);	
+			} catch (CommandException e) {
+				getLogger().warning(e.toString());
+				throw e;
+			}
+		}
+		getServer().getLogger().removeHandler(handler);
+		return handler.toString();
+	}
+	
+	/**
+	 * Execute a CommandScript
+	 * @param script
+	 */
+	public void executeCommandScript(CommandScript script) throws CommandException {
+		try {
+			String log = executeCommands(script.commands);
+			script.complete(log, true);
+		} catch (CommandException e) {
+			script.complete(e.getMessage(), false);
+			throw e;
+		}
+	}
+	
+	
+	/**
+	 * Execute a OrderLine
+	 * @param bPlayer: bukkit player associated with order line
+	 * @param line: PendingOrderLine to execute
+	 */
+	public void executeOrderLine(org.bukkit.entity.Player bPlayer, OrderLine line) {
+		// first run any commands
+		if(line.script != null)
+			try {
+				executeCommandScript(line.script);
+				if(line.message.length() > 0) 
+					bPlayer.sendMessage(line.message);
+			} catch (CommandException e) {
+				String message = "There was a problem completing your %s order.  Please contact %s support.";
+				message = String.format(message, line.product.title, game.name);
+				bPlayer.sendMessage(message);
+			}
+	}
 }
