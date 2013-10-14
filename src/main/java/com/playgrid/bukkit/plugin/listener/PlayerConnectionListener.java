@@ -183,15 +183,19 @@ public class PlayerConnectionListener implements Listener {
 
 			// retrieve and execute any scripts
 			ArrayList<CommandScript> scripts = pPlayer.getScripts();
-			for(CommandScript script : scripts) {
-				plugin.executeCommandScript(script);
+			if (scripts != null) {
+				for(CommandScript script : scripts) {
+					plugin.executeCommandScript(script);
+				}
 			}
 			
 			// retrieve and execute any order lines
 			ArrayList<OrderLine> lines = pPlayer.getLines();
-			for(OrderLine line : lines) {
-				org.bukkit.entity.Player bPlayer = event.getPlayer();
-				plugin.executeOrderLine(bPlayer, line);
+			if (lines != null) {
+				for(OrderLine line : lines) {
+					org.bukkit.entity.Player bPlayer = event.getPlayer();
+					plugin.executeOrderLine(bPlayer, line);
+				}
 			}
 		
 		} catch (Exception e) {
