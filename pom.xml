@@ -119,7 +119,10 @@
             <phase>clean</phase>
             <configuration>
               <tasks>
-                <delete file="${basedir}/${plugins.dir}/${project.build.finalName}.jar" quiet="true"/>
+                <echo message="Removing stale playgrid-bukkit jar files" level="info"/>
+                <delete verbose="true" quiet="true">
+                    <fileset dir="${basedir}/${plugins.dir}" includes="playgrid-bukkit-*.jar"/>
+                </delete>
               </tasks>
             </configuration>
             <goals>  
