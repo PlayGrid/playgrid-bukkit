@@ -136,16 +136,15 @@
         <configuration>
           <minimizeJar>true</minimizeJar>
           <finalName>${project.build.finalName}</finalName>
-          
+
           <relocations>
             <relocation>
               <pattern>com.google.gson</pattern>
-              <shadedPattern>com.playgrid.libs.com.google.gson</shadedPattern>
+              <shadedPattern>org.bukkit.craftbukkit.libs.com.google.gson</shadedPattern>
             </relocation>
           </relocations>
 
           <artifactSet>
-
             <includes>
               <include>com.playgrid:pgp-java-sdk:*</include>
               <include>commons-codec:commons-codec:*</include>
@@ -158,31 +157,26 @@
               <include>org.glassfish.hk2.external:*</include>
               <include>org.glassfish.jersey.connectors:jersey-apache-connector:*</include>
               <include>org.glassfish.jersey.core:*</include>
-              <include>com.google.code.gson:*</include>
             </includes>
-            
             <excludes>
               <exclude>com.google.guava:guava</exclude>
+              <exclude>com.google.code.gson:gson</exclude>
             </excludes>
-          
           </artifactSet>
-          
-          <filters>
 
+          <filters>
             <filter>
               <artifact>commons-logging:commons-logging</artifact>
               <includes>
                 <include>org/apache/commons/logging/**</include>
               </includes>
             </filter>
-
             <filter>
               <artifact>org.glassfish.jersey.core:*</artifact>
               <includes>
                 <include>org/glassfish/jersey/**</include>
               </includes>
             </filter>
-
             <filter>
               <artifact>*:*</artifact>
               <excludes>
@@ -191,8 +185,8 @@
                 <exclude>META-INF/*.RSA</exclude>
               </excludes>
             </filter>
-
           </filters>
+
         </configuration>
         <executions>
           <execution>
