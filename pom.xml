@@ -3,7 +3,7 @@
   
   <groupId>com.playgrid.bukkit</groupId>
   <artifactId>playgrid-bukkit</artifactId>
-  <version>2.10</version>
+  <version>2.11</version>
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -145,20 +145,111 @@
               <pattern>com.google.gson</pattern>
               <shadedPattern>org.bukkit.craftbukkit.libs.com.google.gson</shadedPattern>
             </relocation>
+
+            <relocation>
+              <pattern>javax.annotation</pattern>
+              <shadedPattern>com.playgrid.libs.javax.annotation</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>javax.inject</pattern>
+              <shadedPattern>com.playgrid.libs.javax.inject</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>javax.ws.rs</pattern>
+              <shadedPattern>com.playgrid.libs.javax.ws.rs</shadedPattern>
+            </relocation>
+
+            <relocation>
+              <pattern>net.sf.cglib.core</pattern>
+              <shadedPattern>com.playgrid.libs.net.sf.cglib.core</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>net.sf.cglib.proxy</pattern>
+              <shadedPattern>com.playgrid.libs.net.sf.cglib.proxy</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>net.sf.cglib.reflect</pattern>
+              <shadedPattern>com.playgrid.libs.net.sf.cglib.reflect</shadedPattern>
+            </relocation>
+
+            <relocation>
+              <pattern>org.apache.commons.codec</pattern>
+              <shadedPattern>com.playgrid.libs.org.apache.commons.codec</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.apache.commons.logging</pattern>
+              <shadedPattern>com.playgrid.libs.org.apache.commons.logging</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.apache.http</pattern>
+              <shadedPattern>com.playgrid.libs.org.apache.http</shadedPattern>
+            </relocation>
+
+            <relocation>
+              <pattern>org.glassfish.hk2.api</pattern>
+              <shadedPattern>com.playgrid.libs.org.glassfish.hk2.api</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.glassfish.hk2.extension</pattern>
+              <shadedPattern>com.playgrid.libs.org.glassfish.hk2.extension</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.glassfish.hk2.internal</pattern>
+              <shadedPattern>com.playgrid.libs.org.glassfish.hk2.internal</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.glassfish.hk2.osgiresourcelocator</pattern>
+              <shadedPattern>com.playgrid.libs.org.glassfish.hk2.osgiresourcelocator</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.glassfish.hk2.utilities</pattern>
+              <shadedPattern>com.playgrid.libs.org.glassfish.hk2.utilities</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.glassfish.jersey</pattern>
+              <shadedPattern>com.playgrid.libs.org.glassfish.jersey</shadedPattern>
+            </relocation>
+
+            <relocation>
+              <pattern>org.joda.time</pattern>
+              <shadedPattern>com.playgrid.libs.org.joda.time</shadedPattern>
+            </relocation>
+
+            <relocation>
+              <pattern>org.jvnet.hk2.annotations</pattern>
+              <shadedPattern>com.playgrid.libs.org.jvnet.hk2.annotations</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.jvnet.hk2.component</pattern>
+              <shadedPattern>com.playgrid.libs.org.jvnet.hk2.component</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.jvnet.hk2.external.generator</pattern>
+              <shadedPattern>com.playgrid.libs.org.jvnet.hk2.external.generator</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.jvnet.hk2.internal</pattern>
+              <shadedPattern>com.playgrid.libs.org.jvnet.hk2.internal</shadedPattern>
+            </relocation>
+
+            <relocation>
+              <pattern>org.objectweb.asm</pattern>
+              <shadedPattern>com.playgrid.libs.org.objectweb.asm</shadedPattern>
+            </relocation>
           </relocations>
 
           <artifactSet>
             <includes>
-              <include>com.playgrid:pgp-java-sdk:*</include>
-              <include>commons-codec:commons-codec:*</include>
-              <include>commons-logging:commons-logging:*</include>
-              <include>javax.annotation:javax.annotation-api:*</include>
-              <include>javax.ws.rs:javax.ws.rs-api:*</include>
+              <include>com.playgrid:pgp-java-sdk</include>
+              <include>commons-codec:commons-codec</include>
+              <include>commons-logging:commons-logging</include>
+              <include>javax.annotation:javax.annotation-api</include>
+              <include>javax.ws.rs:javax.ws.rs-api</include>
               <include>joda-time:*</include>
               <include>org.apache.httpcomponents:*</include>
               <include>org.glassfish.hk2:*</include>
               <include>org.glassfish.hk2.external:*</include>
-              <include>org.glassfish.jersey.connectors:jersey-apache-connector:*</include>
+              <include>org.glassfish.jersey.connectors:jersey-apache-connector</include>
               <include>org.glassfish.jersey.core:*</include>
             </includes>
             <excludes>
