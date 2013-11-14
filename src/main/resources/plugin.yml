@@ -9,3 +9,4 @@ commands:
   register:
     description: Register with the server.
     usage: /<command> <email>
+    aliases: pgpreg
