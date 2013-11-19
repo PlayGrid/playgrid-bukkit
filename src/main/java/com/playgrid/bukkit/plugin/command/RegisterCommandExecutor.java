@@ -71,7 +71,7 @@ public class RegisterCommandExecutor implements CommandExecutor {
 
 			String[] messages = new String[] {
 					"You have successfully registered.", 
-					"Check your email for further instructions to finalize your registration.",
+					String.format("Check your %s account for instructions to finalize your registration.", playerRegistration.email),
 			};
 			bPlayer.sendMessage(messages);
 
@@ -82,13 +82,13 @@ public class RegisterCommandExecutor implements CommandExecutor {
 			
 		} else if (playerRegistration.message.equals("REJECTED")) {
 			String[] messages = new String[] {
-					"This email address is already in use.", 
+					String.format("%s is already in use.", playerRegistration.email), 
 					String.format("Visit %s to manage your players.", plugin.game.website),
 					};
 			bPlayer.sendMessage(messages);
 
 		} else if (playerRegistration.message.equals("ALREADY REGISTERED")) {
-			bPlayer.sendMessage("You are already registered.");
+			bPlayer.sendMessage(String.format("You have already registered using %s.", playerRegistration.email));
 		
 		} else {
 			plugin.getLogger().info("Unrecognized registration message: " + playerRegistration.message);
