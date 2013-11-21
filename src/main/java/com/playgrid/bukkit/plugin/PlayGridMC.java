@@ -227,8 +227,12 @@ public class PlayGridMC extends JavaPlugin {
 		if (message != null) {
 			message = message.replace("$game_site$", game.website.toString());
 			message = message.replace("$playername$", player.name);
+
+			message = message.replace("$username$", player.name);				// support legacy configs
+		
 		} else {
 			message = "";
+		
 		}
 		
 		statusConfig.put("message", message);
