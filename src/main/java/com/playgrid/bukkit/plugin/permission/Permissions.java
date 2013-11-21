@@ -1,6 +1,7 @@
 package com.playgrid.bukkit.plugin.permission;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import net.milkbowl.vault.permission.Permission;
@@ -16,16 +17,29 @@ import com.playgrid.bukkit.plugin.PlayGridMC;
 public class Permissions {
 	
 	private final PlayGridMC plugin;
+	private final String[] groups;
 	private Permission provider;
 	private boolean enabled = true;
 
-	
+
 	/**
 	 * Constructor
 	 */
 	public Permissions(PlayGridMC plugin) {
 
+		this(plugin, new String[0]);
+	
+	}
+	
+	
+	
+	/**
+	 * Constructor
+	 */
+	public Permissions(PlayGridMC plugin, String[] groups) {
+
 		this.plugin = plugin;
+		this.groups = groups;
 
         if(plugin.getServer().getPluginManager().isPluginEnabled("Vault")) {
 
@@ -37,6 +51,7 @@ public class Permissions {
 		    	
 		    	String msg = String.format("Detected Vault permissions provider %s", provider.getName());
 		    	plugin.getLogger().info(msg);
+		    	plugin.getLogger().info(String.format("Using PlayGrid groups %s", Arrays.toString(this.groups)));
 		    	return;
 
 		    } else {
@@ -143,7 +158,7 @@ public class Permissions {
 		String[] groups = new String[] {};
 		
 		try {
-			groups = provider.getPlayerGroups(player);
+			groups = plugin.getPlayer(player.getName()).permission_groups;      // Remove PlayGrid groups
 			
 		} catch (UnsupportedOperationException e) {
 			disable(e.getMessage());
@@ -153,7 +168,7 @@ public class Permissions {
 		for (String group : groups) {
 			removeGroup(player, group);
 		}
-		return true;                                                            // FIXME (JP): Test for truth?
+		return true;                                                            // TODO (JP): Test for truth?
 	}
 	
 	

@@ -2,6 +2,7 @@ package com.playgrid.bukkit.plugin.listener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.NotFoundException;
@@ -18,7 +19,6 @@ import org.joda.time.Period;
 import com.playgrid.api.client.RestAPI;
 import com.playgrid.api.client.manager.PlayerManager;
 import com.playgrid.api.entity.CommandScript;
-import com.playgrid.api.entity.Game;
 import com.playgrid.api.entity.OrderLine;
 import com.playgrid.api.entity.Player;
 import com.playgrid.api.entity.PlayerResponse;
@@ -66,9 +66,9 @@ public class PlayerConnectionListener implements Listener {
 			}
 			
 			
-			statusConfig = getPlayerStatusConfig(pPlayer);
+			statusConfig = plugin.getPlayerStatusConfig(pPlayer);
 			
-			String message = (String) statusConfig.get("message");
+			String message = (String) statusConfig.get("message");				// FIXME (JP): Convert message to a StringBuilder
 			PlayerLoginEvent.Result result = PlayerLoginEvent.Result.KICK_OTHER;
 	
 			switch(pPlayer.status) {
@@ -142,20 +142,15 @@ public class PlayerConnectionListener implements Listener {
 			pPlayer = join(pPlayer);
 			plugin.setPlayer(pPlayer);
 				
-			Map<String, Object> statusConfig = getPlayerStatusConfig(pPlayer);
-	
-			String[] permission_groups = new String[] {};
-			String group = (String) statusConfig.get("group");
-			if (group != null) {
-				permission_groups = new String[] {group};
-			}
-			String message = (String) statusConfig.get("message");
+			Map<String, Object> statusConfig = plugin.getPlayerStatusConfig(pPlayer);
+			
+			String message = (String) statusConfig.get("message");				// FIXME (JP): Convert message to a StringBuilder
 			
 	
 			switch(pPlayer.status) {
-				case AUTHORIZED:
+				case AUTHORIZED:                                                // FIXME (JP): Is this case needed?
 					if(pPlayer.permission_groups.length > 0) {
-						permission_groups = pPlayer.permission_groups; 
+						List<String> permission_groups = new ArrayList<String>(Arrays.asList(pPlayer.permission_groups)); 
 						break;
 					}
 
@@ -177,9 +172,9 @@ public class PlayerConnectionListener implements Listener {
 			
 			event.getPlayer().sendMessage(message);
 	
-			plugin.permissions.setGroups(event.getPlayer(), permission_groups);
+			plugin.permissions.setGroups(event.getPlayer(), pPlayer.permission_groups);
 			
-			plugin.getLogger().info(pPlayer.name + " joined and was added to the " + Arrays.toString(permission_groups) + " groups.");
+			plugin.getLogger().info(pPlayer.name + " joined and was added to the " + Arrays.toString(pPlayer.permission_groups) + " groups.");
 
 			// retrieve and execute any scripts
 			ArrayList<CommandScript> scripts = pPlayer.getScripts();
@@ -212,6 +207,8 @@ public class PlayerConnectionListener implements Listener {
 		try {
 			
 			String player_token = event.getPlayer().getName();
+			plugin.permissions.removeGroups(event.getPlayer());
+			
 			Player pPlayer = plugin.removePlayer(player_token);
 			
 			pPlayer = quit(pPlayer);
@@ -272,27 +269,6 @@ public class PlayerConnectionListener implements Listener {
 	
 	
 	
-	private Map<String, Object> getPlayerStatusConfig(Player pPlayer) {
-		
-		String configPath = String.format("player.status.%s", pPlayer.status.toString().toLowerCase());
-		Map<String, Object> statusConfig = plugin.getConfig().getConfigurationSection(configPath).getValues(true);
-		
-		String message = (String) statusConfig.get("message");
-		if (message != null) {
-			Game game = plugin.game;
-			message = message.replace("$game_site$", game.website.toString());
-			message = message.replace("$playername$", pPlayer.name);
-		} else {
-			message = "";
-		}
-		
-		statusConfig.put("message", message);
-		
-		return statusConfig;
-	}
-
-
-
 	private String getSuspensionDuration(Player pPlayer) {
 		
 		DateTime suspended_until = new DateTime(pPlayer.suspended_until);

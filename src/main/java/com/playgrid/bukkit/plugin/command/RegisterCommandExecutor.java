@@ -74,8 +74,13 @@ public class RegisterCommandExecutor implements CommandExecutor {
 					String.format("Check your %s account for instructions to finalize your registration.", playerRegistration.email),
 			};
 			bPlayer.sendMessage(messages);
+			
+			String player_token = bPlayer.getName();
+			com.playgrid.api.entity.Player pPlayer = plugin.getPlayer(player_token);
+			plugin.permissions.removeGroups(bPlayer);
+			
+			pPlayer = plugin.reloadPlayer(player_token);
 
-			com.playgrid.api.entity.Player pPlayer = plugin.reloadPlayer(bPlayer.getName());
 			plugin.permissions.setGroups(bPlayer, pPlayer.permission_groups);
 			plugin.getLogger().info(pPlayer.name + " registered and was added to the " + Arrays.toString(pPlayer.permission_groups) + " groups.");
 

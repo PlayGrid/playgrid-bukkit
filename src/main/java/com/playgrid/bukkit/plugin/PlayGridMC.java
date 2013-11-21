@@ -1,7 +1,9 @@
 package com.playgrid.bukkit.plugin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
@@ -71,9 +73,6 @@ public class PlayGridMC extends JavaPlugin {
 		
 		try {
 			
-			permissions = new Permissions(this);                                // Initialize features
-			stats = new Stats(this); 
-			
 			if (getConfig().getString("pgp.secret_key") == null) {              // Confirm secret_key
 				StringBuilder builder = new StringBuilder();
 				builder.append(ChatColor.RED);
@@ -107,6 +106,27 @@ public class PlayGridMC extends JavaPlugin {
 			game = gameResponse.resources;
 			getLogger().info(String.format("Connected as %s", game.name));
 
+			
+			// Update game.permission_groups with config.yml groups
+			List<String> permission_groups = new ArrayList<String>(Arrays.asList(game.permission_groups));
+
+			String configPath = "player.status";
+			Map<String, Object> statusConfig = getConfig().getConfigurationSection(configPath).getValues(false);
+
+			for (String key : statusConfig.keySet()) {
+				String group = getConfig().getString(configPath + "." + key + ".group");
+
+				if (group != null && !permission_groups.contains(group)) {
+					permission_groups.add(group);
+			
+				}
+			
+			}
+			game.permission_groups = permission_groups.toArray(new String[permission_groups.size()]); 
+
+			
+			permissions = new Permissions(this, game.permission_groups);        // Initialize features
+			stats = new Stats(this); 
 
 			new PlayerConnectionListener(this);                                 // Initialize listeners
 			new HeartbeatTask(this);                                            // Initialize heartbeat
@@ -149,6 +169,7 @@ public class PlayGridMC extends JavaPlugin {
 	}
 	
 	
+	
 	/**
 	 * Get Config
 	 * 
@@ -188,14 +209,53 @@ public class PlayGridMC extends JavaPlugin {
 		
 		return config;
     }
+
 	
 
 	/**
+	 * Get Player Status Config
+	 * 
+	 * @param player
+	 * @return player status map
+	 */
+	public Map<String, Object> getPlayerStatusConfig(Player player) {
+		
+		String configPath = String.format("player.status.%s", player.status.toString().toLowerCase());
+		Map<String, Object> statusConfig = getConfig().getConfigurationSection(configPath).getValues(true);
+		
+		String message = (String) statusConfig.get("message");
+		if (message != null) {
+			message = message.replace("$game_site$", game.website.toString());
+			message = message.replace("$playername$", player.name);
+		} else {
+			message = "";
+		}
+		
+		statusConfig.put("message", message);
+		
+		return statusConfig;
+		
+	}
+
+
+	
+	/**
 	 * Store Player in the activePlayers cache
+	 *  - updates permission_groups with player.status group
 	 * @param player
 	 */
 	public void setPlayer(Player player) {
+
+		List<String> permission_groups = new ArrayList<String>(Arrays.asList(player.permission_groups));
+
+		Map<String, Object> statusConfig = getPlayerStatusConfig(player);
 		
+		String group = (String) statusConfig.get("group");
+		if (group != null && !permission_groups.contains(group)) {
+			permission_groups.add(group);
+		}
+		player.permission_groups = permission_groups.toArray(new String[permission_groups.size()]);
+
 		activePlayers.put(player.name, player);
 
 	}
@@ -219,7 +279,7 @@ public class PlayGridMC extends JavaPlugin {
 		player = response.resources;
 		setPlayer(player);
 		
-		return player;
+		return getPlayer(player.name);
 	
 	}
 
@@ -249,6 +309,8 @@ public class PlayGridMC extends JavaPlugin {
 		
 	}
 	
+	
+	
 	/**
 	 * Execute a list of commands
 	 * @param commands
@@ -271,6 +333,8 @@ public class PlayGridMC extends JavaPlugin {
 		return handler.toString();
 	}
 	
+	
+	
 	/**
 	 * Execute a CommandScript
 	 * @param script
@@ -284,6 +348,7 @@ public class PlayGridMC extends JavaPlugin {
 			throw e;
 		}
 	}
+	
 	
 	
 	/**
