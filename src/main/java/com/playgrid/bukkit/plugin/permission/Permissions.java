@@ -67,6 +67,7 @@ public class Permissions {
 	}
 	
 	
+	
 	/**
 	 * Is enabled
 	 * @return	enabled status boolean
@@ -92,24 +93,23 @@ public class Permissions {
 	}
 	
 	
+	
 	/**
 	 * Add groups to player
 	 * @param 	player	player to add groups too
 	 * @param 	groups	groups to add to player
-	 * @return 			success boolean
 	 */
-	public boolean addGroups(Player player, String[] groups) {
-		if (!isEnabled()) { return false; }
+	public void addGroups(Player player, String[] groups) {
+		if (!isEnabled()) { return; }
 		
 		List<String> successList = new ArrayList<String>();
 		List<String> failList = new ArrayList<String>();
 		
 		for (String group : groups) {
-			if (addGroup(player, group)) {
-				successList.add(group);
-				continue;
+			if (!addGroup(player, group)) {
+				failList.add(group);
 			}
-			failList.add(group);
+			successList.add(group);
 		}
 		
 		String successMsg = String.format("[PlayGrid] You have been added to the %s groups", successList);
@@ -122,12 +122,17 @@ public class Permissions {
 
 		if (failList.size() > 0) {
 			player.sendMessage(ChatColor.RED + failMsg);
-			return false;
+
+			plugin.getLogger().warning(
+					String.format(
+							"Unable to add %s to the %s groups", 
+							player.getName(), 
+							failList
+							)
+					);
 			
 		}
-		
-		return true;
-		
+
 	}
 
 	
@@ -136,39 +141,42 @@ public class Permissions {
 	 * Set groups removes all groups before adding provided groups
 	 * @param 	player	player to add groups too
 	 * @param 	groups	groups to add to player
-	 * @return 			success boolean
 	 */
-	public boolean setGroups(Player player, String[] groups) {
-		if (!isEnabled()) { return false; }
+	public void setGroups(Player player, String[] groups) {
+		if (!isEnabled()) { return; }
 		
 		removeGroups(player);
-		return addGroups(player, groups);
+		addGroups(player, groups);
 	}
 	
 	
 	
 	/**
 	 * Remove groups from player
-	 * @param 	player	player to remove all groups from	
-	 * @return 			success boolean
+	 * @param 	player	player to remove all PlayGrid groups from	
 	 */
-	public boolean removeGroups(Player player) {
-		if (!isEnabled()) { return false; }
+	public void removeGroups(Player player) {
+		if (!isEnabled()) { return; }
 		
-		String[] groups = new String[] {};
+		List<String> failList = new ArrayList<String>();
 		
-		try {
-			groups = plugin.getPlayer(player.getName()).permission_groups;      // Remove PlayGrid groups
-			
-		} catch (UnsupportedOperationException e) {
-			disable(e.getMessage());
+		for (String group : groups) {
+			if (!removeGroup(player, group)) {
+				failList.add(group);
+			}
+
+		}
+		
+		if (!failList.isEmpty()) {
+			String msg = String.format(
+					"Unable to remove %s from the %s groups", 
+					player.getName(), 
+					failList
+					);
+			plugin.getLogger().warning(msg);
 		
 		}
 
-		for (String group : groups) {
-			removeGroup(player, group);
-		}
-		return true;                                                            // TODO (JP): Test for truth?
 	}
 	
 	

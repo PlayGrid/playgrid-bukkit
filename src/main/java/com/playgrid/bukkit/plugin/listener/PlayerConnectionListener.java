@@ -2,7 +2,6 @@ package com.playgrid.bukkit.plugin.listener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.NotFoundException;
@@ -68,7 +67,7 @@ public class PlayerConnectionListener implements Listener {
 			
 			statusConfig = plugin.getPlayerStatusConfig(pPlayer);
 			
-			String message = (String) statusConfig.get("message");				// FIXME (JP): Convert message to a StringBuilder
+			StringBuilder messageBuilder = new StringBuilder((String) statusConfig.get("message"));
 			PlayerLoginEvent.Result result = PlayerLoginEvent.Result.KICK_OTHER;
 	
 			switch(pPlayer.status) {
@@ -79,22 +78,30 @@ public class PlayerConnectionListener implements Listener {
 					break;
 				
 				case BANNED:
-					message += "\n\nReason: " + pPlayer.reason;
+					messageBuilder.append("\n\n");
+					messageBuilder.append(String.format("Reason: %s", pPlayer.reason));
+					
 					result = PlayerLoginEvent.Result.KICK_BANNED;
 					break;
 	
 				case SUSPENDED:
-					message += "\n\nReason: " + pPlayer.reason;
+					messageBuilder.append("\n\n");
+					messageBuilder.append(String.format("Reason: %s", pPlayer.reason));
 					
 					String duration = getSuspensionDuration(pPlayer);
-					message += String.format("\nSuspension ends in %s", duration);
+					
+					messageBuilder.append("\n");
+					messageBuilder.append(String.format("Suspension ends in %s", duration));
 					break;
 				
 				case UNVERIFIED:
 					Integer max_unverified_days = (Integer)statusConfig.get("max_unverified_days");
 					if (max_unverified_days != -1) {
 						if (pPlayer.unverified_days > max_unverified_days) {
-							message += "\n\nYou must verify your email address to continue playing.";
+							
+							messageBuilder.append("\n\n");
+							messageBuilder.append("You must verify your email address to continue playing.");
+
 							statusConfig.put("action", "kick");
 						}
 					}
@@ -110,7 +117,7 @@ public class PlayerConnectionListener implements Listener {
 				plugin.setPlayer(pPlayer);
 				
 			} else {
-				event.disallow(result, message);
+				event.disallow(result, messageBuilder.toString());
 				plugin.removePlayer(player_token);
 	
 				plugin.permissions.removeGroups(event.getPlayer());
@@ -141,40 +148,61 @@ public class PlayerConnectionListener implements Listener {
 			
 			pPlayer = join(pPlayer);
 			plugin.setPlayer(pPlayer);
-				
-			Map<String, Object> statusConfig = plugin.getPlayerStatusConfig(pPlayer);
 			
-			String message = (String) statusConfig.get("message");				// FIXME (JP): Convert message to a StringBuilder
+			Map<String, Object> statusConfig = plugin.getPlayerStatusConfig(pPlayer);
+			String[] config_group = new String[] {};
+
+			String group = (String)statusConfig.get("group");
+			if (group != null) {
+				config_group = new String[] {group};
+			}
+			
+			StringBuilder messageBuilder = new StringBuilder((String)statusConfig.get("message"));
 			
 	
 			switch(pPlayer.status) {
-				case AUTHORIZED:                                                // FIXME (JP): Is this case needed?
-					if(pPlayer.permission_groups.length > 0) {
-						List<String> permission_groups = new ArrayList<String>(Arrays.asList(pPlayer.permission_groups)); 
-						break;
-					}
+				case BANNED:
+					messageBuilder.append("\n\n");
+					messageBuilder.append(String.format("Banned for: %s", pPlayer.reason));
+					
+					pPlayer.permission_groups = config_group;					// Force config_group only
+					break;
+				
+				case SUSPENDED:
+					String duration = getSuspensionDuration(pPlayer);
 
+					messageBuilder.append("\n\n");
+					messageBuilder.append(String.format("Suspension ends in %s", duration));
+
+					pPlayer.permission_groups = config_group;					// Force config_group only
+					break;
+					
 				case UNVERIFIED:
 					int max_unverified_days = (Integer) statusConfig.get("max_unverified_days");
 					if (max_unverified_days != -1) {
-						message += "\n\nWarning! - you have " + Integer.toString(max_unverified_days - pPlayer.unverified_days) + " days left to verify your account.";
+						
+						messageBuilder.append("\n\n");
+						messageBuilder.append("Warning! - you have ");
+						messageBuilder.append(max_unverified_days - pPlayer.unverified_days);
+						messageBuilder.append(" days left to verify your account.");
+						
 					}
-					break;
-	
-				case SUSPENDED:
-					String duration = getSuspensionDuration(pPlayer);
-					message += String.format("\n\nSuspension ends in %s", duration);
 					break;
 					
 				default:
 					break;
 			}
 			
-			event.getPlayer().sendMessage(message);
+			event.getPlayer().sendMessage(messageBuilder.toString());
 	
 			plugin.permissions.setGroups(event.getPlayer(), pPlayer.permission_groups);
 			
-			plugin.getLogger().info(pPlayer.name + " joined and was added to the " + Arrays.toString(pPlayer.permission_groups) + " groups.");
+			String logMsg = String.format(
+					"%s joined and was added to the %s groups.", 
+					pPlayer.name, 
+					Arrays.toString(pPlayer.permission_groups)
+					);
+			plugin.getLogger().info(logMsg);
 
 			// retrieve and execute any scripts
 			ArrayList<CommandScript> scripts = pPlayer.getScripts();
