@@ -106,10 +106,13 @@ public class Permissions {
 		List<String> failList = new ArrayList<String>();
 		
 		for (String group : groups) {
-			if (!addGroup(player, group)) {
+			if (addGroup(player, group)) {
+				successList.add(group);
+
+			} else {
 				failList.add(group);
+			
 			}
-			successList.add(group);
 		}
 		
 		String successMsg = String.format("[PlayGrid] You have been added to the %s groups", successList);
