@@ -226,6 +226,7 @@ public class PlayGridMC extends JavaPlugin {
 		String configPath = String.format("player.status.%s", player.status.toString().toLowerCase());
 		Map<String, Object> statusConfig = getConfig().getConfigurationSection(configPath).getValues(true);
 		
+		// Process message
 		String message = (String) statusConfig.get("message");
 		if (message != null) {
 			message = message.replace("$game_site$", game.website.toString());
@@ -239,6 +240,17 @@ public class PlayGridMC extends JavaPlugin {
 		}
 		
 		statusConfig.put("message", message);
+		
+		try {
+			// Process max_unverified_days
+			if (statusConfig.containsKey("max_unverified_days")) {
+				if (((String) statusConfig.get("max_unverified_days")).toLowerCase().equals("any")) {
+					statusConfig.put("max_unverified_days", -1);
+	
+				}
+			}
+		} catch (ClassCastException e) {
+		}
 		
 		return statusConfig;
 		
