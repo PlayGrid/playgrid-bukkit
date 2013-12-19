@@ -129,7 +129,7 @@ public class PlayGridMC extends JavaPlugin {
 			stats = new Stats(this); 
 
 			new PlayerConnectionListener(this);                                 // Initialize listeners
-			new HeartbeatTask(this);                                            // Initialize heartbeat
+			new HeartbeatTask(this, game.heartbeat_interval);                   // Initialize heartbeat
 			
 			
 			getLogger().info(String.format("%s %s successfully enabled", getDescription().getName(), getDescription().getVersion()));

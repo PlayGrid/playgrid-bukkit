@@ -1,21 +1,27 @@
 package com.playgrid.bukkit.plugin.task;
 
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.playgrid.api.client.RestAPI;
 import com.playgrid.api.client.manager.GameManager;
+import com.playgrid.api.entity.Game;
+import com.playgrid.api.entity.GameResponse;
+import com.playgrid.bukkit.plugin.PlayGridMC;
 
 public class HeartbeatTask extends BukkitRunnable {
 
-	private final JavaPlugin plugin;
+	private final PlayGridMC plugin;
+	private int interval;
 	
 	
-	public HeartbeatTask(JavaPlugin plugin) {
+	public HeartbeatTask(PlayGridMC plugin, int interval) {
 		
 		this.plugin = plugin;
-		this.runTaskTimerAsynchronously(plugin, 20*60, 20*60);                  // Testing: 20*5, 20*10 	
-
+		this.interval = interval;
+		
+		int ticks = 20 * interval;                                              // 20 ticks/second
+		runTaskTimerAsynchronously(plugin, ticks, ticks);
+		
 	}
 
 
@@ -34,10 +40,18 @@ public class HeartbeatTask extends BukkitRunnable {
 			}
 	
 			GameManager gameManager = RestAPI.getInstance().getGamesManager();
-			gameManager.heartbeat();
+			GameResponse gameResponse = gameManager.heartbeat();
+			Game game = gameResponse.resources;
+			
+			if (this.interval != game.heartbeat_interval) {
+				new HeartbeatTask(this.plugin, game.heartbeat_interval);        // schedule a task with new interval
+				cancel();                                                       // cancel current task's recurrence
+			
+			}
 			
 		} catch (RuntimeException e) {
 			plugin.getLogger().severe(e.getMessage());
+		
 		}
 		
 	}
