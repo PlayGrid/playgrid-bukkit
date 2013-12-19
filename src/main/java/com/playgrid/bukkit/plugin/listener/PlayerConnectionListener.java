@@ -60,9 +60,7 @@ public class PlayerConnectionListener implements Listener {
 	
 			} 
 			
-			if (pPlayer.unverified_days != 0) {
-				pPlayer.status = Player.Status.UNVERIFIED;						// FIXME: (JP) The API does not return unverified
-			}
+			fixupUnverifiedStatus(pPlayer);
 			
 			
 			statusConfig = plugin.getPlayerStatusConfig(pPlayer);
@@ -133,6 +131,14 @@ public class PlayerConnectionListener implements Listener {
 
 
 
+	private void fixupUnverifiedStatus(Player pPlayer) {
+		if (pPlayer.unverified_days != 0) {
+			pPlayer.status = Player.Status.UNVERIFIED;						    // FIXME: (JP) The API does not return unverified
+		}
+	}
+
+
+
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 
@@ -147,6 +153,7 @@ public class PlayerConnectionListener implements Listener {
 			}
 			
 			pPlayer = join(pPlayer);
+			fixupUnverifiedStatus(pPlayer);
 			plugin.setPlayer(pPlayer);
 			
 			Map<String, Object> statusConfig = plugin.getPlayerStatusConfig(pPlayer);
