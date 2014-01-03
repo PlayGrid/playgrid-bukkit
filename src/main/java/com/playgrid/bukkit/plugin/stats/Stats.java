@@ -28,7 +28,7 @@ public class Stats {
 	public Stats(PlayGridMC plugin) {
 
 		this.plugin = plugin;
-		boolean disable_stats = plugin.getConfig().getBoolean("player.disable_stats");
+		boolean enable_stats = plugin.getConfig().getBoolean("player.enable_stats", true);
 
         if(plugin.getServer().getPluginManager().isPluginEnabled("Stats")) {
 
@@ -40,8 +40,8 @@ public class Stats {
 		    	
 		    	plugin.getLogger().info("Detected Stats provider");
 		    	
-		    	if (disable_stats == true) {
-		    		disable("player.disable_stats is true in config.yml");
+		    	if (enable_stats == false) {
+		    		disable("Set 'player.enable_stats: true' in config.yml to enable PlayGrid stats support.");
 	
 		    	}
 		    	

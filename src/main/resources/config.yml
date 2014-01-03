@@ -23,8 +23,8 @@ player.authorization_required: false
 
 ## Player Stats
 ##  - Requires Lolmewn's Stats plugin [http://dev.bukkit.org/bukkit-plugins/lolmewnstats/]
-#
-# player.disable_stats: false
+
+player.enable_stats: true
 
 
 ## Player Status
