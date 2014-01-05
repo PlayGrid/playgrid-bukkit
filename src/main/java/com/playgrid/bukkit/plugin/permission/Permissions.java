@@ -41,6 +41,8 @@ public class Permissions {
 		this.plugin = plugin;
 		this.groups = groups;
 
+		boolean enable_groups = plugin.getConfig().getBoolean("player.enable_groups", false);
+		
         if(plugin.getServer().getPluginManager().isPluginEnabled("Vault")) {
 
 			RegisteredServiceProvider<Permission> rsp;
@@ -51,8 +53,20 @@ public class Permissions {
 		    	
 		    	String msg = String.format("Detected Vault permissions provider %s", provider.getName());
 		    	plugin.getLogger().info(msg);
-		    	plugin.getLogger().info(String.format("Using PlayGrid groups %s", Arrays.toString(this.groups)));
-		    	return;
+
+		    	if (!enable_groups) {
+		    		if (this.groups.length > 0) {
+		    			msg =  "Set 'player.enable_groups: true' in config.yml ";
+		    			msg += "to enable PlayGrid group management for %s.";
+		    			msg = String.format(msg, Arrays.toString(this.groups));
+		    			disable(msg);
+		    			
+		    		}
+	
+		    	} else {
+		    		plugin.getLogger().info(String.format("Using PlayGrid groups %s", Arrays.toString(this.groups)));
+		    		
+		    	}
 
 		    } else {
 		    	disable("Vault permissions provider not found");
@@ -87,7 +101,7 @@ public class Permissions {
 	 * @param	reason	reason for disabling permissions
 	 */
 	private void disable(String reason) {
-		plugin.getLogger().warning("Disabling permissions support: " + reason);
+		plugin.getLogger().warning("Disabling group-permission support: " + reason);
 		enabled = false;
 
 	}
