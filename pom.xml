@@ -36,12 +36,12 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.6.4-R2.0</version>
+      <version>1.7.2-R0.2</version>
     </dependency>
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>craftbukkit</artifactId>
-      <version>1.6.4-R2.0</version>
+      <version>1.7.2-R0.2</version>
     </dependency>
     <dependency>
       <groupId>joda-time</groupId>
@@ -61,7 +61,7 @@
     <dependency>
     	<groupId>nl.lolmewn.stats</groupId>
     	<artifactId>Stats</artifactId>
-    	<version>1.36</version>
+    	<version>1.37</version>
     	<exclusions>
     		<exclusion>
     			<artifactId>AuthMe</artifactId>
