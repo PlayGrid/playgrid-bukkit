@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.ws.rs.NotFoundException;
 
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -139,7 +140,7 @@ public class PlayerConnectionListener implements Listener {
 
 
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 
 		try {
