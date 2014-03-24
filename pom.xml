@@ -3,7 +3,7 @@
   
   <groupId>com.playgrid.bukkit</groupId>
   <artifactId>playgrid-bukkit</artifactId>
-  <version>2.15</version>
+  <version>2.17</version>
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
