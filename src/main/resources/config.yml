@@ -23,8 +23,20 @@ player.authorization_required: false
 
 ## Player Stats
 ##  - Requires Lolmewn's Stats plugin [http://dev.bukkit.org/bukkit-plugins/lolmewnstats/]
-#
-# player.disable_stats: false
+
+player.enable_stats: true
+
+
+## Permissions Groups
+##  - Make PlayGrid the authoritative group manager, administered via your PlayGird admin website
+## 
+##  - Requires the Vault plugin [http://dev.bukkit.org/bukkit-plugins/vault/]
+##    and supported Perms plugin, such as the PEX [http://dev.bukkit.org/bukkit-plugins/permissionsex/]
+##
+##  WARNING: Enabling groups will override the player's groups with the value of their PlayGrid equivalent!
+##           Please be sure that your players are in their corresponding PlayGrid groups. 
+
+player.enable_groups: false
 
 
 ## Player Status

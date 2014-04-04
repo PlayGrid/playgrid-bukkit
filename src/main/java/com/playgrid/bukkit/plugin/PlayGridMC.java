@@ -182,33 +182,39 @@ public class PlayGridMC extends JavaPlugin {
 	public FileConfiguration getConfig() {
 		FileConfiguration config = super.getConfig();
 		
-		if (!(config.contains("secret_key") || config.contains("player_status"))) {
-			return config;
+		// Transpose older configuration options to new schema
+		if (config.contains("secret_key")) {                                    // legacy 1.x
+			config.set("pgp.secret_key", config.getString("secret_key"));
+			config.set("secret_key", null);
 		}
 		
-		getLogger().info("Migrating config.yml to new schema");
+		if (config.contains("api_base")) {                                      // legacy 1.x
+			String url = config.getString("api_base");
+			config.set("pgp.url", url);
+			config.set("api_base", null);
+		}
+		
+		if (config.contains("track_stats")) {                                   // legacy 1.x
+			config.set("player.disable_stats", !config.getBoolean("track_stats"));
+			config.set("track_stats", null);
+		}
 
+		if (config.contains("player.disable_stats")) {                          // changed in 2.16
+			config.set("player.enable_stats", !config.getBoolean("player.disable_stats"));
+			config.set("player.disable_stats", null);
+		}
 		
-		// Transpose
-		config.set("pgp.secret_key", config.getString("secret_key"));
-		config.set("secret_key", null);
+		if (config.contains("player_status")) {                                 // legacy 1.x
+			String action = config.getString("player_status.none.action");
+			boolean authorization_required = ("kick".equals(action)) ? true : false;
+			config.set("player.authorization_required", authorization_required);
+			
+			config.set("player.status", config.getConfigurationSection("player_status"));
+			config.set("player_status", null);
+		}
 		
-		String url = config.getString("api_base");                              // FIXME (JP): Process URL scheme
-		config.set("pgp.url", url);
-		config.set("api_base", null);
-		
-		config.set("player.disable_stats", !config.getBoolean("track_stats"));
-		config.set("track_stats", null);
-		
-		String action = config.getString("player_status.none.action");
-		boolean authorization_required = ("kick".equals(action)) ? true : false;
-		config.set("player.authorization_required", authorization_required);
-		
-		config.set("player.status", config.getConfigurationSection("player_status"));
-		config.set("player_status", null);
-		
-		// TODO (JP): Backup config.yml file
-		// TODO (JP): Save
+		// TODO (JP): Backup current config.yml
+		// TODO (JP): Save migrated config.yml
 		
 		return config;
     }

@@ -22,10 +22,10 @@
       <id>bukkit-repo</id>
       <url>http://repo.bukkit.org/content/groups/public/</url>
     </repository>
-    <repository>
-      <id>vault-repo</id>
-      <url>http://ci.herocraftonline.com/plugin/repository/everything/</url>
-    </repository>
+	<repository>
+	    <id>vault-repo</id>
+	    <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+	</repository>
     <repository>
       <id>stats-repo</id>
       <url>http://centrility.nl:8081/nexus/content/repositories/releases/</url>
@@ -36,12 +36,12 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.6.4-R2.0</version>
+      <version>1.7.2-R0.2</version>
     </dependency>
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>craftbukkit</artifactId>
-      <version>1.6.4-R2.0</version>
+      <version>1.7.2-R0.2</version>
     </dependency>
     <dependency>
       <groupId>joda-time</groupId>
@@ -51,7 +51,7 @@
     <dependency>
       <groupId>net.milkbowl.vault</groupId>
       <artifactId>Vault</artifactId>
-      <version>1.2.27</version>
+      <version>1.2.31</version>
     </dependency>
     <dependency>
     	<groupId>com.playgrid</groupId>
@@ -61,7 +61,7 @@
     <dependency>
     	<groupId>nl.lolmewn.stats</groupId>
     	<artifactId>Stats</artifactId>
-    	<version>1.36</version>
+    	<version>1.37</version>
     	<exclusions>
     		<exclusion>
     			<artifactId>AuthMe</artifactId>
