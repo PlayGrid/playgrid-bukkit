@@ -286,14 +286,14 @@ public class PlayGridMC extends JavaPlugin {
 	
 	/**
 	 * Reload Player and recache the PlayGrid Player
-	 * @param player_token
+	 * @param name
 	 * @return Player
 	 */
-	public Player reloadPlayer(String player_token) {
+	public Player reloadPlayer(String name) {
 		
 		PlayerManager playerManager = RestAPI.getInstance().getPlayerManager();
 
-		Player player = getPlayer(player_token);
+		Player player = getPlayer(name);
 		if (player == null ) {
 			return null;
 		}
@@ -308,12 +308,12 @@ public class PlayGridMC extends JavaPlugin {
 	
 	/**
 	 * Retrieve Player from the activePlayers cache
-	 * @param player_token
+	 * @param name
 	 * @return Player
 	 */
-	public Player getPlayer(String player_token) {
+	public Player getPlayer(String name) {
 
-		return activePlayers.get(player_token);
+		return activePlayers.get(name);
 
 	}
 
@@ -321,12 +321,12 @@ public class PlayGridMC extends JavaPlugin {
 	
 	/**
 	 * Remove Player from activePlayers cache
-	 * @param player_token
+	 * @param name
 	 * @return the removed Player
 	 */
-	public Player removePlayer(String player_token) {
+	public Player removePlayer(String name) {
 		
-		return activePlayers.remove(player_token);
+		return activePlayers.remove(name);
 		
 	}
 	

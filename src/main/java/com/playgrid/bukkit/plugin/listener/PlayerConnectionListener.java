@@ -47,16 +47,16 @@ public class PlayerConnectionListener implements Listener {
 			Player pPlayer = null;
 			Map<String, Object> statusConfig = null;
 			
-			String player_token = event.getPlayer().getName();
+			String name = event.getPlayer().getName();
 			String player_uid = event.getPlayer().getUniqueId().toString().replaceAll("-", "");
 			try {
-				pPlayer = authorize(player_token);
+				pPlayer = authorize(name);
 				
 			} catch (NotFoundException e) {
 				plugin.getLogger().severe(e.getMessage());
 	
 				pPlayer = new Player();
-				pPlayer.name = player_token;
+				pPlayer.name = name;
 				pPlayer.uid = player_uid;
 				pPlayer.status = Player.Status.ERROR;
 	
@@ -118,7 +118,7 @@ public class PlayerConnectionListener implements Listener {
 				
 			} else {
 				event.disallow(result, messageBuilder.toString());
-				plugin.removePlayer(player_token);
+				plugin.removePlayer(name);
 	
 				plugin.permissions.removeGroups(event.getPlayer());
 			
@@ -146,8 +146,8 @@ public class PlayerConnectionListener implements Listener {
 
 		try {
 			
-			String player_token = event.getPlayer().getName();
-			Player pPlayer = plugin.getPlayer(player_token);
+			String name = event.getPlayer().getName();
+			Player pPlayer = plugin.getPlayer(name);
 			
 			if (pPlayer == null) {
 				return;
@@ -243,10 +243,10 @@ public class PlayerConnectionListener implements Listener {
 		
 		try {
 			
-			String player_token = event.getPlayer().getName();
+			String name = event.getPlayer().getName();
 			plugin.permissions.removeGroups(event.getPlayer());
 			
-			Player pPlayer = plugin.removePlayer(player_token);
+			Player pPlayer = plugin.removePlayer(name);
 			
 			pPlayer = quit(pPlayer);
 	
@@ -261,13 +261,13 @@ public class PlayerConnectionListener implements Listener {
 
 	
 
-	private Player authorize(String player_token) {
+	private Player authorize(String name) {
 
 		PlayerManager playerManager = RestAPI.getInstance().getPlayerManager();
 
 		Boolean authorization_required = plugin.getConfig().getBoolean("player.authorization_required");
 
-		return playerManager.authorize(player_token, authorization_required);		
+		return playerManager.authorize(name, authorization_required);		
 	}
 	
 	

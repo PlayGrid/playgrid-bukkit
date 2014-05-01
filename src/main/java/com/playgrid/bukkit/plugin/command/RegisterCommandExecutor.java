@@ -73,11 +73,11 @@ public class RegisterCommandExecutor implements CommandExecutor {
 			};
 			bPlayer.sendMessage(messages);
 			
-			String player_token = bPlayer.getName();
-			com.playgrid.api.entity.Player pPlayer = plugin.getPlayer(player_token);
+			String name = bPlayer.getName();
+			com.playgrid.api.entity.Player pPlayer = plugin.getPlayer(name);
 			plugin.permissions.removeGroups(bPlayer);
 			
-			pPlayer = plugin.reloadPlayer(player_token);
+			pPlayer = plugin.reloadPlayer(name);
 
 			plugin.permissions.setGroups(bPlayer, pPlayer.permission_groups);
 			plugin.getLogger().info(pPlayer.name + " registered and was added to the " + Arrays.toString(pPlayer.permission_groups) + " groups.");
