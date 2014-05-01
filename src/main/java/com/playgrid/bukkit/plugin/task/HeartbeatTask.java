@@ -5,7 +5,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.playgrid.api.client.RestAPI;
 import com.playgrid.api.client.manager.GameManager;
 import com.playgrid.api.entity.Game;
-import com.playgrid.api.entity.GameResponse;
 import com.playgrid.bukkit.plugin.PlayGridMC;
 
 public class HeartbeatTask extends BukkitRunnable {
@@ -39,9 +38,8 @@ public class HeartbeatTask extends BukkitRunnable {
 			
 			}
 	
-			GameManager gameManager = RestAPI.getInstance().getGamesManager();
-			GameResponse gameResponse = gameManager.heartbeat();
-			Game game = gameResponse.resources;
+			GameManager gameManager = RestAPI.getInstance().getGameManager();
+			Game game = gameManager.heartbeat(plugin.game);
 			
 			if (this.interval != game.heartbeat_interval) {
 				new HeartbeatTask(this.plugin, game.heartbeat_interval);        // schedule a task with new interval

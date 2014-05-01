@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 import com.playgrid.api.client.RestAPI;
 import com.playgrid.api.client.manager.PlayerManager;
 import com.playgrid.api.entity.PlayerRegistration;
-import com.playgrid.api.entity.PlayerRegistrationResponse;
 import com.playgrid.bukkit.plugin.PlayGridMC;
 
 public class RegisterCommandExecutor implements CommandExecutor {
@@ -59,8 +58,7 @@ public class RegisterCommandExecutor implements CommandExecutor {
 		
 		PlayerRegistration playerRegistration;
 		try {
-			PlayerRegistrationResponse response = playerManager.register(bPlayer.getName(), email);
-			playerRegistration = response.resources;
+			playerRegistration = playerManager.register(bPlayer.getName(), email);
 		
 		} catch (BadRequestException e) {
 			bPlayer.sendMessage("Invalid email address, please try again");

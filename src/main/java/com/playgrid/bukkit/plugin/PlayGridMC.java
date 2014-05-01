@@ -17,10 +17,8 @@ import com.playgrid.api.client.manager.GameManager;
 import com.playgrid.api.client.manager.PlayerManager;
 import com.playgrid.api.entity.CommandScript;
 import com.playgrid.api.entity.Game;
-import com.playgrid.api.entity.GameResponse;
 import com.playgrid.api.entity.OrderLine;
 import com.playgrid.api.entity.Player;
-import com.playgrid.api.entity.PlayerResponse;
 import com.playgrid.bukkit.plugin.command.RegisterCommandExecutor;
 import com.playgrid.bukkit.plugin.handler.LogHandler;
 import com.playgrid.bukkit.plugin.listener.PlayerConnectionListener;
@@ -100,10 +98,10 @@ public class PlayGridMC extends JavaPlugin {
 			
 			}
 				
-			GameManager gameManager = RestAPI.getInstance().getGamesManager();
+			GameManager gameManager = RestAPI.getInstance().getGameManager();
 
-			GameResponse gameResponse = gameManager.connect();                  // Connect game
-			game = gameResponse.resources;
+			game = gameManager.self();
+			gameManager.connect(game);                  // Connect game
 			getLogger().info(String.format("Connected as %s", game.name));
 
 			
@@ -158,10 +156,9 @@ public class PlayGridMC extends JavaPlugin {
 				return;
 			}
 	
-			GameManager gameManager = RestAPI.getInstance().getGamesManager();
+			GameManager gameManager = RestAPI.getInstance().getGameManager();
 	
-			GameResponse gameResponse = gameManager.disconnect();               // Disconnect game
-			game = gameResponse.resources;
+			gameManager.disconnect(game);               // Disconnect game
 			getLogger().info(String.format("Disconnected game: %s", game.name));
 
 		} catch (Exception e) {
@@ -300,8 +297,7 @@ public class PlayGridMC extends JavaPlugin {
 		if (player == null ) {
 			return null;
 		}
-		PlayerResponse response = playerManager.reload(player);
-		player = response.resources;
+		player = playerManager.reload(player);
 		setPlayer(player);
 		
 		return getPlayer(player.name);

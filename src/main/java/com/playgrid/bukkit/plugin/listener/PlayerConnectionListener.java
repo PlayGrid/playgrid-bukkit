@@ -21,7 +21,6 @@ import com.playgrid.api.client.manager.PlayerManager;
 import com.playgrid.api.entity.CommandScript;
 import com.playgrid.api.entity.OrderLine;
 import com.playgrid.api.entity.Player;
-import com.playgrid.api.entity.PlayerResponse;
 import com.playgrid.bukkit.plugin.PlayGridMC;
 
 
@@ -49,6 +48,7 @@ public class PlayerConnectionListener implements Listener {
 			Map<String, Object> statusConfig = null;
 			
 			String player_token = event.getPlayer().getName();
+			String player_uid = event.getPlayer().getUniqueId().toString().replaceAll("-", "");
 			try {
 				pPlayer = authorize(player_token);
 				
@@ -57,6 +57,7 @@ public class PlayerConnectionListener implements Listener {
 	
 				pPlayer = new Player();
 				pPlayer.name = player_token;
+				pPlayer.uid = player_uid;
 				pPlayer.status = Player.Status.ERROR;
 	
 			} 
@@ -266,9 +267,7 @@ public class PlayerConnectionListener implements Listener {
 
 		Boolean authorization_required = plugin.getConfig().getBoolean("player.authorization_required");
 
-		PlayerResponse response = playerManager.authorize(player_token, authorization_required);
-		return response.resources;
-		
+		return playerManager.authorize(player_token, authorization_required);		
 	}
 	
 	
@@ -282,10 +281,8 @@ public class PlayerConnectionListener implements Listener {
 
 		String json_stats_payload = plugin.stats.getPlayerStats(player.name);	// Get player stats
 		
-		PlayerResponse response = playerManager.join(player, json_stats_payload);
-		
-		return response.resources;
-		
+		return playerManager.join(player, json_stats_payload);
+
 	}
 
 
@@ -298,8 +295,7 @@ public class PlayerConnectionListener implements Listener {
 		
 		String json_stats_payload = plugin.stats.getPlayerStats(player.name);	// Get player stats
 		
-		PlayerResponse response = playerManager.quit(player, json_stats_payload);
-		return response.resources;
+		return playerManager.quit(player, json_stats_payload);
 		
 	}
 	
