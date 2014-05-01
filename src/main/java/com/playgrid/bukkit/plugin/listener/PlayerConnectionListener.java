@@ -50,7 +50,7 @@ public class PlayerConnectionListener implements Listener {
 			String name = event.getPlayer().getName();
 			String player_uid = event.getPlayer().getUniqueId().toString().replaceAll("-", "");
 			try {
-				pPlayer = authorize(name);
+				pPlayer = authorize(name, player_uid);
 				
 			} catch (NotFoundException e) {
 				plugin.getLogger().severe(e.getMessage());
@@ -261,13 +261,13 @@ public class PlayerConnectionListener implements Listener {
 
 	
 
-	private Player authorize(String name) {
+	private Player authorize(String name, String uid) {
 
 		PlayerManager playerManager = RestAPI.getInstance().getPlayerManager();
 
 		Boolean authorization_required = plugin.getConfig().getBoolean("player.authorization_required");
 
-		return playerManager.authorize(name, authorization_required);		
+		return playerManager.authorize(name, uid, authorization_required);		
 	}
 	
 	

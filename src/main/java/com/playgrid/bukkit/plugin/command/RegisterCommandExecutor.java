@@ -55,10 +55,12 @@ public class RegisterCommandExecutor implements CommandExecutor {
 	private boolean register(Player bPlayer, String email) {
 
 		PlayerManager playerManager = RestAPI.getInstance().getPlayerManager();
+		String player_uid = bPlayer.getUniqueId().toString().replaceAll("-", "");
 		
 		PlayerRegistration playerRegistration;
+		
 		try {
-			playerRegistration = playerManager.register(bPlayer.getName(), email);
+			playerRegistration = playerManager.register(bPlayer.getName(), player_uid, email);
 		
 		} catch (BadRequestException e) {
 			bPlayer.sendMessage("Invalid email address, please try again");
