@@ -3,7 +3,6 @@
   
   <groupId>com.playgrid.bukkit</groupId>
   <artifactId>playgrid-bukkit</artifactId>
-  <version>2.17</version>
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -56,7 +55,7 @@
     <dependency>
     	<groupId>com.playgrid</groupId>
     	<artifactId>pgp-java-sdk</artifactId>
-    	<version>1.0.6</version>
+    	<version>3.0.0</version>
     </dependency>
     <dependency>
     	<groupId>nl.lolmewn.stats</groupId>
@@ -298,4 +297,5 @@
   <url>http://www.playgrid.com/</url>
   <description>A Bukkit plugin to connect to the PlayGrid Platform</description>
 
+  <version>3.00</version>
 </project>
