@@ -64,7 +64,7 @@ player.status:
     unverified:
         action: allow
         message: Welcome to our Server!  Please verify your email by going to $game_site$ <-- click> to enable member status and additional features.
-        max_unverified_days: 10
+        max_unverified_days: -1
 
     ## Player has signed up and verified their account email
     authorized:
