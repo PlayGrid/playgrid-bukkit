@@ -28,27 +28,21 @@ public class PlayerConnectionListener implements Listener {
 	
 	private final PlayGridMC plugin;
 
-	
-	
 	public PlayerConnectionListener(PlayGridMC plugin) {
-	
 		this.plugin = plugin;
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
-		
 	}
 
-
-	
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		
 		try {
-			
 			Player pPlayer = null;
 			Map<String, Object> statusConfig = null;
 			
 			String name = event.getPlayer().getName();
 			String player_uid = event.getPlayer().getUniqueId().toString().replaceAll("-", "");
+
 			try {
 				pPlayer = authorize(name, player_uid);
 				
@@ -59,11 +53,9 @@ public class PlayerConnectionListener implements Listener {
 				pPlayer.name = name;
 				pPlayer.uid = player_uid;
 				pPlayer.status = Player.Status.ERROR;
-	
 			} 
 			
 			fixupUnverifiedStatus(pPlayer);
-			
 			
 			statusConfig = plugin.getPlayerStatusConfig(pPlayer);
 			
@@ -110,7 +102,6 @@ public class PlayerConnectionListener implements Listener {
 				default:
 					plugin.getLogger().info("Unhandled player status: " + pPlayer.status.toString());
 					break;
-	
 			}
 			
 			if (statusConfig.get("action").toString().equalsIgnoreCase("allow")) {
@@ -121,14 +112,11 @@ public class PlayerConnectionListener implements Listener {
 				plugin.removePlayer(name);
 	
 				plugin.permissions.removeGroups(event.getPlayer());
-			
 			}
 
 		} catch (Exception e) {
 			plugin.getLogger().severe(e.getMessage());
-		
 		}
-		
 	}
 
 
@@ -242,7 +230,6 @@ public class PlayerConnectionListener implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		
 		try {
-			
 			String name = event.getPlayer().getName();
 			plugin.permissions.removeGroups(event.getPlayer());
 			
@@ -254,12 +241,8 @@ public class PlayerConnectionListener implements Listener {
 
 		} catch (Exception e) {
 			plugin.getLogger().severe(e.getMessage());
-		
 		}
-
 	}
-
-	
 
 	private Player authorize(String name, String uid) {
 
@@ -269,8 +252,6 @@ public class PlayerConnectionListener implements Listener {
 
 		return playerManager.authorize(name, uid, authorization_required);		
 	}
-	
-	
 	
 	private Player join(Player player) {
 		if (player.url == null) {                                               // Players with ERROR status are not real, return
@@ -285,8 +266,6 @@ public class PlayerConnectionListener implements Listener {
 
 	}
 
-
-
 	private Player quit(Player player) {
 		if (player.url == null) {                                               // Players with ERROR status are not real, return
 			return player;
@@ -296,13 +275,9 @@ public class PlayerConnectionListener implements Listener {
 		String json_stats_payload = plugin.stats.getPlayerStats(player.name);	// Get player stats
 		
 		return playerManager.quit(player, json_stats_payload);
-		
 	}
 	
-	
-	
 	private String getSuspensionDuration(Player pPlayer) {
-		
 		DateTime suspended_until = new DateTime(pPlayer.suspended_until);
 		Period period = new Period(new Instant(), suspended_until);
 		String duration = "unknown"; 
@@ -318,9 +293,7 @@ public class PlayerConnectionListener implements Listener {
 		
 		} else if (period.getSeconds() != 0) {
 			duration = String.format("%s seconds", period.getSeconds());
-		
 		}
 		return duration;
 	}
-	
 }

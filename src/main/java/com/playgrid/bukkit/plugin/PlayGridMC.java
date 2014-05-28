@@ -36,13 +36,11 @@ public class PlayGridMC extends JavaPlugin {
 
 	private final Map<String, Player> activePlayers = new HashMap<String, Player>();
 	
-	
 	/**
 	 * Load PlayGridMC Plugin
 	 */
 	@Override
     public void onLoad() {
-		
 		getConfig().options().copyDefaults(true);                               // Get configuration
 		saveDefaultConfig();
 
@@ -59,11 +57,8 @@ public class PlayGridMC extends JavaPlugin {
 		StringBuilder uaBuilder = new StringBuilder(getDescription().getName());
 		uaBuilder.append("/" + getDescription().getVersion());
 		RestAPI.getConfig().appendUserAgent(uaBuilder.toString());
-		
     }
 
-	
-	
 	/**
 	 * Enable PlayGridMC Plugin
 	 */
@@ -71,7 +66,6 @@ public class PlayGridMC extends JavaPlugin {
 	public void onEnable() {
 		
 		try {
-			
 			if (getConfig().getString("pgp.secret_key") == null) {              // Confirm secret_key
 				StringBuilder builder = new StringBuilder();
 				builder.append(ChatColor.RED);
@@ -82,7 +76,6 @@ public class PlayGridMC extends JavaPlugin {
 				
 				getServer().getPluginManager().disablePlugin(this);
 				return;
-			
 			}
 			
 			try {
@@ -96,15 +89,12 @@ public class PlayGridMC extends JavaPlugin {
 				getServer().getConsoleSender().sendMessage(builder.toString());
 				
 				throw e;
-			
 			}
 				
 			GameManager gameManager = RestAPI.getInstance().getGameManager();
-
 			game = gameManager.self();
-			gameManager.connect(game);                  // Connect game
+			gameManager.connect(game);                  						// Connect game
 			getLogger().info(String.format("Connected as %s", game.name));
-
 			
 			// Update game.permission_groups with config.yml groups
 			List<String> permission_groups = new ArrayList<String>(Arrays.asList(game.permission_groups));
@@ -117,12 +107,10 @@ public class PlayGridMC extends JavaPlugin {
 
 				if (group != null && !permission_groups.contains(group)) {
 					permission_groups.add(group);
-			
 				}
-			
 			}
+			
 			game.permission_groups = permission_groups.toArray(new String[permission_groups.size()]); 
-
 			
 			permissions = new Permissions(this, game.permission_groups);        // Initialize features
 			stats = new Stats(this); 
@@ -130,18 +118,13 @@ public class PlayGridMC extends JavaPlugin {
 			new PlayerConnectionListener(this);                                 // Initialize listeners
 			new HeartbeatTask(this, game.heartbeat_interval);                   // Initialize heartbeat
 			
-			
 			getLogger().info(String.format("%s %s successfully enabled", getDescription().getName(), getDescription().getVersion()));
 			
 		} catch (Exception e) {
 			getLogger().log(Level.SEVERE, "An exception occured.", e);
 			getServer().getPluginManager().disablePlugin(this);
-		
 		}
-    	
 	}
-
-	
 
 	/**
 	 * Disable PlayGridMC Plugin
@@ -150,27 +133,20 @@ public class PlayGridMC extends JavaPlugin {
 	public void onDisable() {
 		
 		try {
-			
 			// TODO: (JP) Disable Listeners & Tasks
-	
-			if (game == null) {                                                 // Exit if never connected game
+			if (game == null) {                                                 // Exit if game never connected
 				return;
 			}
 	
 			GameManager gameManager = RestAPI.getInstance().getGameManager();
-	
-			gameManager.disconnect(game);               // Disconnect game
+			gameManager.disconnect(game);               						// Disconnect game
 			getLogger().info(String.format("Disconnected game: %s", game.name));
 
 		} catch (Exception e) {
 			getLogger().severe(e.getMessage());
-		
 		}
-
 	}
-	
-	
-	
+
 	/**
 	 * Get Config
 	 * 
@@ -268,7 +244,6 @@ public class PlayGridMC extends JavaPlugin {
 	 * @param player
 	 */
 	public void setPlayer(Player player) {
-
 		List<String> permission_groups = new ArrayList<String>(Arrays.asList(player.permission_groups));
 
 		Map<String, Object> statusConfig = getPlayerStatusConfig(player);
@@ -277,35 +252,30 @@ public class PlayGridMC extends JavaPlugin {
 		if (group != null && !permission_groups.contains(group)) {
 			permission_groups.add(group);
 		}
+
 		player.permission_groups = permission_groups.toArray(new String[permission_groups.size()]);
 
 		activePlayers.put(player.name, player);
-
 	}
-	
-	
-	
+
 	/**
 	 * Reload Player and recache the PlayGrid Player
 	 * @param name
 	 * @return Player
 	 */
 	public Player reloadPlayer(String name) {
-		
 		PlayerManager playerManager = RestAPI.getInstance().getPlayerManager();
 
 		Player player = getPlayer(name);
 		if (player == null ) {
 			return null;
 		}
+
 		player = playerManager.reload(player);
 		setPlayer(player);
 		
 		return getPlayer(player.name);
-	
 	}
-
-	
 	
 	/**
 	 * Retrieve Player from the activePlayers cache
@@ -313,12 +283,8 @@ public class PlayGridMC extends JavaPlugin {
 	 * @return Player
 	 */
 	public Player getPlayer(String name) {
-
 		return activePlayers.get(name);
-
 	}
-
-	
 	
 	/**
 	 * Remove Player from activePlayers cache
@@ -326,12 +292,8 @@ public class PlayGridMC extends JavaPlugin {
 	 * @return the removed Player
 	 */
 	public Player removePlayer(String name) {
-		
 		return activePlayers.remove(name);
-		
 	}
-	
-	
 	
 	/**
 	 * Execute a list of commands
@@ -355,8 +317,6 @@ public class PlayGridMC extends JavaPlugin {
 		return handler.toString();
 	}
 	
-	
-	
 	/**
 	 * Execute a CommandScript
 	 * @param script
@@ -370,8 +330,6 @@ public class PlayGridMC extends JavaPlugin {
 			throw e;
 		}
 	}
-	
-	
 	
 	/**
 	 * Execute a OrderLine
