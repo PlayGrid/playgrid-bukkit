@@ -64,7 +64,6 @@ public class PlayGridMC extends JavaPlugin {
 	 */
 	@Override
 	public void onEnable() {
-		
 		try {
 			if (getConfig().getString("pgp.secret_key") == null) {              // Confirm secret_key
 				StringBuilder builder = new StringBuilder();
@@ -179,10 +178,6 @@ public class PlayGridMC extends JavaPlugin {
 		}
 		
 		if (config.contains("player_status")) {                                 // legacy 1.x
-			String action = config.getString("player_status.none.action");
-			boolean authorization_required = ("kick".equals(action)) ? true : false;
-			config.set("player.authorization_required", authorization_required);
-			
 			config.set("player.status", config.getConfigurationSection("player_status"));
 			config.set("player_status", null);
 		}
