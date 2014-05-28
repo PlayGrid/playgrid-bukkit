@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandException;
@@ -133,7 +134,7 @@ public class PlayGridMC extends JavaPlugin {
 			getLogger().info(String.format("%s %s successfully enabled", getDescription().getName(), getDescription().getVersion()));
 			
 		} catch (Exception e) {
-			getLogger().severe(e.getMessage());
+			getLogger().log(Level.SEVERE, "An exception occured.", e);
 			getServer().getPluginManager().disablePlugin(this);
 		
 		}
