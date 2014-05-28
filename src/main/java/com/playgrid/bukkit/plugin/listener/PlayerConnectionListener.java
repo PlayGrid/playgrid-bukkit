@@ -250,22 +250,19 @@ public class PlayerConnectionListener implements Listener {
 			return player;
 		}
 		
-		PlayerManager playerManager = RestAPI.getInstance().getPlayerManager();
-
 		String json_stats_payload = plugin.stats.getPlayerStats(player.name);	// Get player stats
-		
-		return playerManager.join(player, json_stats_payload);
 
+		PlayerManager playerManager = RestAPI.getInstance().getPlayerManager();
+		return playerManager.join(player, json_stats_payload);
 	}
 
 	private Player quit(Player player) {
 		if (player.url == null) {                                               // Players with ERROR status are not real, return
 			return player;
 		}
-		PlayerManager playerManager = RestAPI.getInstance().getPlayerManager();
-		
 		String json_stats_payload = plugin.stats.getPlayerStats(player.name);	// Get player stats
 		
+		PlayerManager playerManager = RestAPI.getInstance().getPlayerManager();
 		return playerManager.quit(player, json_stats_payload);
 	}
 	
