@@ -44,8 +44,7 @@ public class PlayGridMC extends JavaPlugin {
 		getConfig().options().copyDefaults(true);                               // Get configuration
 		saveDefaultConfig();
 
-		boolean debug   = getConfig().getBoolean("debug");
-		RestAPI.getConfig().setDebug(debug);
+		RestAPI.getConfig().setDebug(getConfig().getBoolean("debug"));
 		
 		@SuppressWarnings("unchecked")
 		Map<String, String> pgp = (Map<String, String>) (Map<?, ?>)getConfig().getConfigurationSection("pgp").getValues(true);
