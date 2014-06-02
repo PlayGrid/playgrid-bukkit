@@ -27,7 +27,6 @@ import com.playgrid.bukkit.plugin.permission.Permissions;
 import com.playgrid.bukkit.plugin.stats.Stats;
 import com.playgrid.bukkit.plugin.task.HeartbeatTask;
 
-
 public class PlayGridMC extends JavaPlugin {
 
 	public Game game;
@@ -35,28 +34,30 @@ public class PlayGridMC extends JavaPlugin {
 	public Stats stats;
 
 	private final Map<String, Player> activePlayers = new HashMap<String, Player>();
-	
+
 	/**
 	 * Load PlayGridMC Plugin
 	 */
 	@Override
-    public void onLoad() {
-		getConfig().options().copyDefaults(true);                               // Get configuration
+	public void onLoad() {
+		// Get configuration
+		getConfig().options().copyDefaults(true);
 		saveDefaultConfig();
 
 		RestAPI.getConfig().setDebug(getConfig().getBoolean("debug"));
-		
+
 		@SuppressWarnings("unchecked")
-		Map<String, String> pgp = (Map<String, String>) (Map<?, ?>)getConfig().getConfigurationSection("pgp").getValues(true);
-		
-		RestAPI.getConfig().setAccessToken(pgp.get("secret_key"));              // Setup API
+		Map<String, String> pgp = (Map<String, String>) (Map<?, ?>) getConfig().getConfigurationSection("pgp").getValues(true);
+
+		// Setup API
+		RestAPI.getConfig().setAccessToken(pgp.get("secret_key"));
 		RestAPI.getConfig().setURL(pgp.get("url"));
 		RestAPI.getConfig().setVersion(pgp.get("version"));
-		
+
 		StringBuilder uaBuilder = new StringBuilder(getDescription().getName());
 		uaBuilder.append("/" + getDescription().getVersion());
 		RestAPI.getConfig().appendUserAgent(uaBuilder.toString());
-    }
+	}
 
 	/**
 	 * Enable PlayGridMC Plugin
@@ -64,36 +65,39 @@ public class PlayGridMC extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		try {
-			if (getConfig().getString("pgp.secret_key") == null) {              // Confirm secret_key
+			// Confirm secret_key
+			if (getConfig().getString("pgp.secret_key") == null) {
 				StringBuilder builder = new StringBuilder();
 				builder.append(ChatColor.RED);
-				builder.append("[PlayGridMC] Config.yml property 'secret_key' is missing. "); 
+				builder.append("[PlayGridMC] Config.yml property 'secret_key' is missing. ");
 				builder.append("Set your 'secret_key' to your key on playgrid.com -> Admin -> Plugin.");
-				
+
 				getServer().getConsoleSender().sendMessage(builder.toString());
-				
+
 				getServer().getPluginManager().disablePlugin(this);
 				return;
 			}
-			
+
 			try {
-				CommandExecutor cmd = new RegisterCommandExecutor(this);        // Initialize commands
+				// Initialize commands
+				CommandExecutor cmd = new RegisterCommandExecutor(this);
 				getCommand("register").setExecutor(cmd);
-				
+
 			} catch (NullPointerException e) {
 				StringBuilder builder = new StringBuilder();
 				builder.append(ChatColor.RED);
-				builder.append("[PlayGridMC] There was a problem enabling commands."); 
+				builder.append("[PlayGridMC] There was a problem enabling commands.");
 				getServer().getConsoleSender().sendMessage(builder.toString());
-				
+
 				throw e;
 			}
-				
+
+			// Connect
 			GameManager gameManager = RestAPI.getInstance().getGameManager();
 			game = gameManager.self();
-			gameManager.connect(game);                  						// Connect game
+			gameManager.connect(game);
 			getLogger().info(String.format("Connected as %s", game.name));
-			
+
 			// Update game.permission_groups with config.yml groups
 			List<String> permission_groups = new ArrayList<String>(Arrays.asList(game.permission_groups));
 
@@ -129,15 +133,16 @@ public class PlayGridMC extends JavaPlugin {
 	 */
 	@Override
 	public void onDisable() {
-		
+		// TODO: (JP) Disable Listeners & Tasks
+		if (game == null) {
+			// Exit if game never connected
+			return;
+		}
+
 		try {
-			// TODO: (JP) Disable Listeners & Tasks
-			if (game == null) {                                                 // Exit if game never connected
-				return;
-			}
-	
+			// Disconnect
 			GameManager gameManager = RestAPI.getInstance().getGameManager();
-			gameManager.disconnect(game);               						// Disconnect game
+			gameManager.disconnect(game);
 			getLogger().info(String.format("Disconnected game: %s", game.name));
 
 		} catch (Exception e) {
@@ -153,34 +158,40 @@ public class PlayGridMC extends JavaPlugin {
 	@Override
 	public FileConfiguration getConfig() {
 		FileConfiguration config = super.getConfig();
-		
+
 		// Transpose older configuration options to new schema
-		if (config.contains("secret_key")) {                                    // legacy 1.x
+
+		// legacy 1.x
+		if (config.contains("secret_key")) {
 			config.set("pgp.secret_key", config.getString("secret_key"));
 			config.set("secret_key", null);
 		}
-		
-		if (config.contains("api_base")) {                                      // legacy 1.x
+
+		// legacy 1.x
+		if (config.contains("api_base")) {
 			String url = config.getString("api_base");
 			config.set("pgp.url", url);
 			config.set("api_base", null);
 		}
-		
-		if (config.contains("track_stats")) {                                   // legacy 1.x
+
+		// legacy 1.x
+		if (config.contains("track_stats")) {
 			config.set("player.disable_stats", !config.getBoolean("track_stats"));
 			config.set("track_stats", null);
 		}
 
-		if (config.contains("player.disable_stats")) {                          // changed in 2.16
+		// changed in 2.16
+		if (config.contains("player.disable_stats")) {
 			config.set("player.enable_stats", !config.getBoolean("player.disable_stats"));
 			config.set("player.disable_stats", null);
 		}
-		
-		if (config.contains("player_status")) {                                 // legacy 1.x
+
+		// legacy 1.x
+		if (config.contains("player_status")) {
 			config.set("player.status", config.getConfigurationSection("player_status"));
 			config.set("player_status", null);
 		}
-		
+
 		// TODO (JP): Backup current config.yml
 		// TODO (JP): Save migrated config.yml
 		
@@ -231,10 +242,10 @@ public class PlayGridMC extends JavaPlugin {
 	}
 
 
-	
 	/**
-	 * Store Player in the activePlayers cache
-	 *  - updates permission_groups with player.status group
+	 * Store Player in the activePlayers cache - updates permission_groups with
+	 * player.status group
+	 * 
 	 * @param player
 	 */
 	public void setPlayer(Player player) {
@@ -254,6 +265,7 @@ public class PlayGridMC extends JavaPlugin {
 
 	/**
 	 * Reload Player and recache the PlayGrid Player
+	 * 
 	 * @param name
 	 * @return Player
 	 */
@@ -261,36 +273,39 @@ public class PlayGridMC extends JavaPlugin {
 		PlayerManager playerManager = RestAPI.getInstance().getPlayerManager();
 
 		Player player = getPlayer(name);
-		if (player == null ) {
+		if (player == null) {
 			return null;
 		}
 
 		player = playerManager.reload(player);
 		setPlayer(player);
-		
+
 		return getPlayer(player.name);
 	}
-	
+
 	/**
 	 * Retrieve Player from the activePlayers cache
+	 * 
 	 * @param name
 	 * @return Player
 	 */
 	public Player getPlayer(String name) {
 		return activePlayers.get(name);
 	}
-	
+
 	/**
 	 * Remove Player from activePlayers cache
+	 * 
 	 * @param name
 	 * @return the removed Player
 	 */
 	public Player removePlayer(String name) {
 		return activePlayers.remove(name);
 	}
-	
+
 	/**
 	 * Execute a list of commands
+	 * 
 	 * @param commands
 	 * @return console log as string
 	 */
@@ -298,10 +313,10 @@ public class PlayGridMC extends JavaPlugin {
 		// add a log handler to capture log output from running commands
 		LogHandler handler = new LogHandler();
 		getServer().getLogger().addHandler(handler);
-		for(String command : commands) {
+		for (String command : commands) {
 			try {
-				getLogger().info(command);	// send command to log so we have it in the log
-				getServer().dispatchCommand(getServer().getConsoleSender(), command);	
+				// send command to log so we have it in the log
+				getLogger().info(command); 
 			} catch (CommandException e) {
 				getLogger().warning(e.toString());
 				throw e;
@@ -310,33 +325,39 @@ public class PlayGridMC extends JavaPlugin {
 		getServer().getLogger().removeHandler(handler);
 		return handler.toString();
 	}
-	
+
 	/**
 	 * Execute a CommandScript
+	 * 
 	 * @param script
 	 */
 	public void executeCommandScript(CommandScript script) throws CommandException {
 		try {
 			String log = executeCommands(script.commands);
 			script.complete(log, true);
+		
 		} catch (CommandException e) {
 			script.complete(e.getMessage(), false);
 			throw e;
 		}
 	}
-	
+
 	/**
 	 * Execute a OrderLine
-	 * @param bPlayer: bukkit player associated with order line
-	 * @param line: PendingOrderLine to execute
+	 * 
+	 * @param bPlayer
+	 *            : bukkit player associated with order line
+	 * @param line
+	 *            : PendingOrderLine to execute
 	 */
 	public void executeOrderLine(org.bukkit.entity.Player bPlayer, OrderLine line) {
 		// first run any commands
-		if(line.script != null)
+		if (line.script != null)
 			try {
 				executeCommandScript(line.script);
-				if(line.message.length() > 0) 
+				if (line.message.length() > 0)
 					bPlayer.sendMessage(line.message);
+			
 			} catch (CommandException e) {
 				String message = "There was a problem completing your %s order.  Please contact %s support.";
 				message = String.format(message, line.product.title, game.name);

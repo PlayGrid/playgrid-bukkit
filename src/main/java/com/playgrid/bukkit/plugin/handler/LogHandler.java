@@ -26,13 +26,13 @@ public class LogHandler extends Handler {
 	@Override
 	public void close() throws SecurityException {
 	}
-	
+
 	public String toString() {
 		String string = "";
-		for(LogRecord r : log) {
-			DateTime jodaTime = new DateTime(r.getMillis(),DateTimeZone.forTimeZone(TimeZone.getDefault()));
-	        DateTimeFormatter parser = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-	        String time = parser.print(jodaTime);
+		for (LogRecord r : log) {
+			DateTime jodaTime = new DateTime(r.getMillis(), DateTimeZone.forTimeZone(TimeZone.getDefault()));
+			DateTimeFormatter parser = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+			String time = parser.print(jodaTime);
 			string += "[" + time + "] " + r.getMessage() + "\n";
 		}
 		return string;
