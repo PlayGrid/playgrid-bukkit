@@ -74,8 +74,8 @@ public class RegisterCommandExecutor implements CommandExecutor {
 			
 			pPlayer = plugin.reloadPlayer(name);
 
-			plugin.permissions.setGroups(bPlayer, pPlayer.permission_groups);
-			plugin.getLogger().info(pPlayer.name + " registered and was added to the " + Arrays.toString(pPlayer.permission_groups) + " groups.");
+//			plugin.permissions.setGroups(bPlayer, pPlayer.permission_groups);
+//			plugin.getLogger().info(pPlayer.name + " registered and was added to the " + Arrays.toString(pPlayer.permission_groups) + " groups.");
 			
 		} else if (playerRegistration.message.equals("REJECTED")) {
 			String[] messages = new String[] {

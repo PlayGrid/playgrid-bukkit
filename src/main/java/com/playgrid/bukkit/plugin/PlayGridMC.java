@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import javax.ws.rs.WebApplicationException;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandExecutor;
@@ -98,32 +100,25 @@ public class PlayGridMC extends JavaPlugin {
 			gameManager.connect(game);
 			getLogger().info(String.format("Connected as %s", game.name));
 
-			// Update game.permission_groups with config.yml groups
-			List<String> permission_groups = new ArrayList<String>(Arrays.asList(game.permission_groups));
+			// Initialize features
+			permissions = new Permissions(this, game.permission_groups);
+			stats = new Stats(this);
 
-			String configPath = "player.status";
-			Map<String, Object> statusConfig = getConfig().getConfigurationSection(configPath).getValues(false);
+			// Initialize listeners & tasks
+			new PlayerConnectionListener(this);
+			new HeartbeatTask(this, game.heartbeat_interval);
 
-			for (String key : statusConfig.keySet()) {
-				String group = getConfig().getString(configPath + "." + key + ".group");
+			String name = getDescription().getName();
+			String version = getDescription().getVersion();
+			getLogger().info(
+					String.format("%s %s successfully enabled", name, version));
 
-				if (group != null && !permission_groups.contains(group)) {
-					permission_groups.add(group);
-				}
-			}
-			
-			game.permission_groups = permission_groups.toArray(new String[permission_groups.size()]); 
-			
-			permissions = new Permissions(this, game.permission_groups);        // Initialize features
-			stats = new Stats(this); 
+		} catch (WebApplicationException e) {
+			getLogger().severe(e.getMessage());
+			getServer().getPluginManager().disablePlugin(this);
 
-			new PlayerConnectionListener(this);                                 // Initialize listeners
-			new HeartbeatTask(this, game.heartbeat_interval);                   // Initialize heartbeat
-			
-			getLogger().info(String.format("%s %s successfully enabled", getDescription().getName(), getDescription().getVersion()));
-			
 		} catch (Exception e) {
-			getLogger().log(Level.SEVERE, "An exception occured.", e);
+			getLogger().log(Level.SEVERE, "", e);
 			getServer().getPluginManager().disablePlugin(this);
 		}
 	}
@@ -145,7 +140,7 @@ public class PlayGridMC extends JavaPlugin {
 			gameManager.disconnect(game);
 			getLogger().info(String.format("Disconnected game: %s", game.name));
 
-		} catch (Exception e) {
+		} catch (WebApplicationException e) {
 			getLogger().severe(e.getMessage());
 		}
 	}
@@ -194,53 +189,9 @@ public class PlayGridMC extends JavaPlugin {
 
 		// TODO (JP): Backup current config.yml
 		// TODO (JP): Save migrated config.yml
-		
+
 		return config;
-    }
-
-	
-
-	/**
-	 * Get Player Status Config
-	 * 
-	 * @param player
-	 * @return player status map
-	 */
-	public Map<String, Object> getPlayerStatusConfig(Player player) {
-		
-		String configPath = String.format("player.status.%s", player.status.toString().toLowerCase());
-		Map<String, Object> statusConfig = getConfig().getConfigurationSection(configPath).getValues(true);
-		
-		// Process message
-		String message = (String) statusConfig.get("message");
-		if (message != null) {
-			message = message.replace("$game_site$", game.website.toString());
-			message = message.replace("$playername$", player.name);
-
-			message = message.replace("$username$", player.name);				// support legacy configs
-		
-		} else {
-			message = "";
-		
-		}
-		
-		statusConfig.put("message", message);
-		
-		try {
-			// Process max_unverified_days
-			if (statusConfig.containsKey("max_unverified_days")) {
-				if (((String) statusConfig.get("max_unverified_days")).toLowerCase().equals("any")) {
-					statusConfig.put("max_unverified_days", -1);
-	
-				}
-			}
-		} catch (ClassCastException e) {
-		}
-		
-		return statusConfig;
-		
 	}
-
 
 	/**
 	 * Store Player in the activePlayers cache - updates permission_groups with
@@ -249,17 +200,6 @@ public class PlayGridMC extends JavaPlugin {
 	 * @param player
 	 */
 	public void setPlayer(Player player) {
-		List<String> permission_groups = new ArrayList<String>(Arrays.asList(player.permission_groups));
-
-		Map<String, Object> statusConfig = getPlayerStatusConfig(player);
-		
-		String group = (String) statusConfig.get("group");
-		if (group != null && !permission_groups.contains(group)) {
-			permission_groups.add(group);
-		}
-
-		player.permission_groups = permission_groups.toArray(new String[permission_groups.size()]);
-
 		activePlayers.put(player.name, player);
 	}
 
@@ -317,6 +257,9 @@ public class PlayGridMC extends JavaPlugin {
 			try {
 				// send command to log so we have it in the log
 				getLogger().info(command); 
+											
+				getServer().dispatchCommand(getServer().getConsoleSender(), command);
+
 			} catch (CommandException e) {
 				getLogger().warning(e.toString());
 				throw e;
