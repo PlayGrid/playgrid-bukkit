@@ -83,37 +83,19 @@ public class RegisterCommandExecutor implements CommandExecutor {
 			return false;
 		}
 		
+
+		// registration successful
+		bPlayer.sendMessage(playerRegistration.message);
 		
-		if (playerRegistration.message.equals("SUCCESS")) {
-			String[] messages = new String[] {
-					"You have successfully registered.", 
-					String.format("Check your %s account for instructions to finalize your registsration.", playerRegistration.email),
-			};
-			bPlayer.sendMessage(messages);
-			
-			String name = bPlayer.getName();
-			com.playgrid.api.entity.Player pPlayer = plugin.getPlayer(name);
-			plugin.permissions.removeGroups(bPlayer);
-			
-			pPlayer = plugin.reloadPlayer(name);
+		String name = bPlayer.getName();
+		com.playgrid.api.entity.Player pPlayer = plugin.getPlayer(name);
+		plugin.permissions.removeGroups(bPlayer);
+		
+		pPlayer = plugin.reloadPlayer(name);
 
 //			plugin.permissions.setGroups(bPlayer, pPlayer.permission_groups);
 //			plugin.getLogger().info(pPlayer.name + " registered and was added to the " + Arrays.toString(pPlayer.permission_groups) + " groups.");
 			
-		} else if (playerRegistration.message.equals("REJECTED")) {
-			String[] messages = new String[] {
-					String.format("%s is already in use.", playerRegistration.email), 
-					String.format("Visit %s to manage your players.", plugin.game.website),
-			};
-			bPlayer.sendMessage(messages);
-
-		} else if (playerRegistration.message.equals("ALREADY REGISTERED")) {
-			bPlayer.sendMessage(String.format("You have already registered using %s.", playerRegistration.email));
-		
-		} else {
-			plugin.getLogger().info("Unrecognized registration message: " + playerRegistration.message);
-			return false;
-		}
 
 		return true;
 	}
