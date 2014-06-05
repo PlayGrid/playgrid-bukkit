@@ -9,6 +9,7 @@ import javax.ws.rs.NotFoundException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -46,6 +47,8 @@ public class PlayerConnectionListener implements Listener {
 			
 			Player pPlayer = null;
 			Map<String, Object> statusConfig = null;
+			
+			plugin.activatePlayerLocale(event.getPlayer()); // set language
 			
 			String name = event.getPlayer().getName();
 			String player_uid = event.getPlayer().getUniqueId().toString().replaceAll("-", "");
@@ -143,6 +146,8 @@ public class PlayerConnectionListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
+		
+		plugin.activatePlayerLocale(event.getPlayer()); // set language
 
 		try {
 			
@@ -240,6 +245,8 @@ public class PlayerConnectionListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
+		
+		plugin.activatePlayerLocale(event.getPlayer()); // set language
 		
 		try {
 			

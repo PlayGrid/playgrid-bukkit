@@ -1,5 +1,6 @@
 package com.playgrid.bukkit.plugin;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -215,6 +216,30 @@ public class PlayGridMC extends JavaPlugin {
 		
 		return config;
     }
+	
+	public String getPlayerLocale(org.bukkit.entity.Player player) {
+        String locale;
+
+        try {
+            /*
+                It seems an API call has not yet been included, therefore
+                we have to use reflection to obtain the locale.
+            */
+            Object getHandle = player.getClass().getMethod("getHandle", (Class<?>[]) null).invoke(player, (Object[]) null);
+            Field language = getHandle.getClass().getDeclaredField("locale");
+            language.setAccessible(true);
+            locale = (String)language.get(getHandle);
+
+        } catch (Throwable e){
+            return("en-US");
+        }
+        return locale;
+	}
+	
+	public void activatePlayerLocale(org.bukkit.entity.Player player) {
+		String locale = this.getPlayerLocale(player);
+		RestAPI.getConfig().setLocale(locale);
+	}
 
 	
 
