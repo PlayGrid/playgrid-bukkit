@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandException;
@@ -18,6 +20,7 @@ import com.playgrid.api.client.manager.GameManager;
 import com.playgrid.api.client.manager.PlayerManager;
 import com.playgrid.api.entity.CommandScript;
 import com.playgrid.api.entity.Game;
+import com.playgrid.api.entity.GameConnect;
 import com.playgrid.api.entity.OrderLine;
 import com.playgrid.api.entity.Player;
 import com.playgrid.bukkit.plugin.command.RegisterCommandExecutor;
@@ -59,6 +62,8 @@ public class PlayGridMC extends JavaPlugin {
 		StringBuilder uaBuilder = new StringBuilder(getDescription().getName());
 		uaBuilder.append("/" + getDescription().getVersion());
 		RestAPI.getConfig().appendUserAgent(uaBuilder.toString());
+		// add the underlying server user agent string
+		RestAPI.getConfig().appendUserAgent(getServerUserAgent());
 		
     }
 
@@ -102,8 +107,15 @@ public class PlayGridMC extends JavaPlugin {
 			GameManager gameManager = RestAPI.getInstance().getGameManager();
 
 			game = gameManager.self();
-			gameManager.connect(game);                  // Connect game
-			getLogger().info(String.format("Connected as %s", game.name));
+			GameConnect connect = gameManager.connect(game);                  // Connect game
+			getLogger().info(String.format(connect.message));
+			if(connect.warning_message != null && !connect.warning_message.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append("[PlayGridMC] ");
+				builder.append(ChatColor.YELLOW);
+				builder.append(connect.warning_message); 
+				getServer().getConsoleSender().sendMessage(builder.toString());				
+			}
 
 			
 			// Update game.permission_groups with config.yml groups
@@ -282,6 +294,32 @@ public class PlayGridMC extends JavaPlugin {
 		
 		return statusConfig;
 		
+	}
+	
+	
+	/**
+	 * Get the type and version of underlying server
+	 */
+	public String getServerUserAgent() {
+		String cb_version;
+		String cb_name;
+		String userAgent;
+		
+		cb_name = getServer().getName();
+		cb_version = getServer().getBukkitVersion();
+		userAgent = cb_name+"/"+cb_version;
+		
+		// have to parse in order to get MC version
+		String long_version = getServer().getVersion();
+	    Pattern pattern = Pattern.compile("\\(MC: (.*?)\\)");
+	    Matcher matcher = pattern.matcher(long_version);
+	    if(matcher.find()) {
+	    	String mc_version;
+	    	
+	    	mc_version = matcher.group(1);		
+	    	userAgent += " "+"Minecraft/"+mc_version;
+	    }
+	    return(userAgent);
 	}
 
 
