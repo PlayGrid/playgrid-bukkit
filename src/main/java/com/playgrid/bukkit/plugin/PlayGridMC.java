@@ -110,8 +110,7 @@ public class PlayGridMC extends JavaPlugin {
 
 			String name = getDescription().getName();
 			String version = getDescription().getVersion();
-			getLogger().info(
-					String.format("%s %s successfully enabled", name, version));
+			getLogger().info(String.format("%s %s successfully enabled", name, version));
 
 		} catch (WebApplicationException e) {
 			getLogger().severe(e.getMessage());

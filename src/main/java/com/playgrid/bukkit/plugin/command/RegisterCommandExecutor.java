@@ -1,7 +1,5 @@
 package com.playgrid.bukkit.plugin.command;
 
-import java.util.Arrays;
-
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.WebApplicationException;
 
@@ -31,7 +29,9 @@ public class RegisterCommandExecutor implements CommandExecutor {
 			return false;
         } 
 		
-		if (args.length == 0) { return false;}                                  // No args, show usage
+		if (args.length == 0) { 
+			return false; // No args, show usage
+		}
 		
         Player bPlayer = (Player) sender;
 		String email = args[0];
