@@ -7,6 +7,7 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.ServerErrorException;
 import javax.ws.rs.WebApplicationException;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -58,7 +59,7 @@ public class PlayerConnectionListener implements Listener {
 				event.disallow(Result.KICK_OTHER, msg);
 				
 				plugin.removePlayer(name);
-				plugin.permissions.removeGroups(event.getPlayer());
+				plugin.permissions.removeGroups(pPlayer);
 
 				return;
 			}
@@ -70,7 +71,7 @@ public class PlayerConnectionListener implements Listener {
 				event.disallow(Result.KICK_BANNED, pPlayer.message);
 				
 				plugin.removePlayer(name);
-				plugin.permissions.removeGroups(event.getPlayer());
+				plugin.permissions.removeGroups(pPlayer);
 			}
 
 		} catch (Exception e) {
@@ -93,10 +94,13 @@ public class PlayerConnectionListener implements Listener {
 
 			event.getPlayer().sendMessage(pPlayer.message);
 
-//			plugin.permissions.setGroups(event.getPlayer(), pPlayer.permission_groups);
+			String group = plugin.permissions.setGroup(pPlayer);
 
-//			String logMsg = String.format("%s joined and was added to the %s groups.", pPlayer.name, Arrays.toString(pPlayer.permission_groups));
-//			plugin.getLogger().info(logMsg);
+			String msg = String.format("%s joined", pPlayer.name); 
+			if (group != null) {
+				msg += String.format(" and was added to the '%s' group", group); 
+			}
+			plugin.getLogger().info(msg);
 
 			// retrieve and execute any scripts
 			ArrayList<CommandScript> scripts = pPlayer.getScripts();
@@ -127,9 +131,9 @@ public class PlayerConnectionListener implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		try {
 			String name = event.getPlayer().getName();
-			plugin.permissions.removeGroups(event.getPlayer());
 
 			Player pPlayer = plugin.removePlayer(name);
+			plugin.permissions.removeGroups(pPlayer);
 			pPlayer = quit(pPlayer);
 
 			plugin.getLogger().info(pPlayer.name + " has left.");

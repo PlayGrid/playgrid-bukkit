@@ -70,12 +70,11 @@ public class RegisterCommandExecutor implements CommandExecutor {
 			
 			String name = bPlayer.getName();
 			com.playgrid.api.entity.Player pPlayer = plugin.getPlayer(name);
-			plugin.permissions.removeGroups(bPlayer);
 			
 			pPlayer = plugin.reloadPlayer(name);
 
-//			plugin.permissions.setGroups(bPlayer, pPlayer.permission_groups);
-//			plugin.getLogger().info(pPlayer.name + " registered and was added to the " + Arrays.toString(pPlayer.permission_groups) + " groups.");
+			String group = plugin.permissions.setGroup(pPlayer);
+			plugin.getLogger().info(pPlayer.name + " registered and was set to the '" + group + "' group.");
 			
 		} else if (playerRegistration.message.equals("REJECTED")) {
 			String[] messages = new String[] {

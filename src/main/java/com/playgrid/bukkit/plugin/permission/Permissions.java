@@ -1,15 +1,14 @@
 package com.playgrid.bukkit.plugin.permission;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import net.milkbowl.vault.permission.Permission;
 
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+import com.playgrid.api.entity.Player;
 import com.playgrid.bukkit.plugin.PlayGridMC;
 
 public class Permissions {
@@ -46,7 +45,11 @@ public class Permissions {
 				String msg = String.format("Detected Vault permissions provider %s", provider.getName());
 				plugin.getLogger().info(msg);
 
-				if (!enable_groups) {
+				if (!provider.hasGroupSupport()) {
+					msg = "%s does not provide group support";
+					disable(String.format(msg, provider.getName()));
+				
+				} else if (!enable_groups) {
 					if (this.groups.length > 0) {
 						msg = "Set 'player.enable_groups: true' in config.yml ";
 						msg += "to enable PlayGrid group management for %s.";
@@ -87,66 +90,43 @@ public class Permissions {
 	 *            reason for disabling permissions
 	 */
 	private void disable(String reason) {
-		plugin.getLogger().warning("Disabling group-permission support: " + reason);
+		plugin.getLogger().warning("Disabling group support: " + reason);
 		enabled = false;
 	}
 
 	/**
-	 * Add groups to player
+	 * Set player membership group
 	 * 
 	 * @param player
-	 *            player to add groups too
-	 * @param groups
-	 *            groups to add to player
+	 * 			  player to place in an appropriate membership group 
+	 * @return
+	 * 	          group the player was placed in 
 	 */
-	public void addGroups(Player player, String[] groups) {
+	public String setGroup(Player player) {
 		if (!isEnabled()) {
-			return;
-		}
-
-		List<String> successList = new ArrayList<String>();
-		List<String> failList = new ArrayList<String>();
-
-		for (String group : groups) {
-			if (addGroup(player, group)) {
-				successList.add(group);
-
-			} else {
-				failList.add(group);
-			}
-		}
-
-		String successMsg = String.format(
-				"[PlayGrid] You have been added to the %s groups", successList);
-		String failMsg = String.format(
-				"[PlayGrid] Failed to add you to the %s groups", failList);
-
-		if (successList.size() > 0) {
-			player.sendMessage(ChatColor.GREEN + successMsg);
-		}
-
-		if (failList.size() > 0) {
-			player.sendMessage(ChatColor.RED + failMsg);
-
-			plugin.getLogger().warning(String.format("Unable to add %s to the %s groups",player.getName(), failList));
-		}
-	}
-
-	/**
-	 * Set groups removes all groups before adding provided groups
-	 * 
-	 * @param player
-	 *            player to add groups too
-	 * @param groups
-	 *            groups to add to player
-	 */
-	public void setGroups(Player player, String[] groups) {
-		if (!isEnabled()) {
-			return;
+			return null;
 		}
 
 		removeGroups(player);
-		addGroups(player, groups);
+		
+		String group;
+		if (player.entitlements.length != 0) {
+			group = "playgrid.entitlement." + player.entitlements[player.entitlements.length - 1];
+		
+		} else if (player.membership != null) {
+			group = "playgrid.membership." + player.membership;
+		
+		} else {
+			group = "playgrid." + player.registration;
+		}
+
+		group = group.toLowerCase();
+		if (!addGroup(player, group)) {
+			plugin.getLogger().warning(String.format("Unable to add %s to the '%s' group", player.name, group));
+			return null;
+		}
+
+		return group;
 	}
 
 	/**
@@ -160,19 +140,14 @@ public class Permissions {
 			return;
 		}
 
-		List<String> failList = new ArrayList<String>();
-
+		String[] groups = provider.getPlayerGroups(Bukkit.getPlayer(player.name));
 		for (String group : groups) {
-			if (!removeGroup(player, group)) {
-				failList.add(group);
+			if (group.startsWith("playgrid.")) {
+				if (!removeGroup(player, group)) {
+					plugin.getLogger().warning(String.format("Unable to remove %s from the '%s' group", player.name, group));
+				}
 			}
 		}
-
-		if (!failList.isEmpty()) {
-			String msg = String.format("Unable to remove %s from the %s groups", player.getName(), failList);
-			plugin.getLogger().warning(msg);
-		}
-
 	}
 
 	/**
@@ -182,7 +157,7 @@ public class Permissions {
 	 *            player to add group to
 	 * @param group
 	 *            group to add to player
-	 * @return success boolean
+	 * @return success or failure
 	 */
 	public boolean addGroup(Player player, String group) {
 		if (!isEnabled()) {
@@ -190,7 +165,8 @@ public class Permissions {
 		}
 
 		try {
-			return provider.playerAddGroup(player, group);
+			World world = null;  // null world for global groups
+			return provider.playerAddGroup(world, player.name, group);
 
 		} catch (UnsupportedOperationException e) {
 			disable(e.getMessage());
@@ -206,7 +182,7 @@ public class Permissions {
 	 *            player to remove group from
 	 * @param group
 	 *            group to remove from player
-	 * @return success boolean
+	 * @return success or failure
 	 */
 	public boolean removeGroup(Player player, String group) {
 		if (!isEnabled()) {
@@ -214,7 +190,8 @@ public class Permissions {
 		}
 
 		try {
-			return provider.playerRemoveGroup(player, group);
+			World world = null;  // null world for global groups
+			return provider.playerRemoveGroup(world, player.name, group);
 
 		} catch (UnsupportedOperationException e) {
 			disable(e.getMessage());
