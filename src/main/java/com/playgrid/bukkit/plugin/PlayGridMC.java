@@ -1,9 +1,12 @@
 package com.playgrid.bukkit.plugin;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.WebApplicationException;
 
@@ -18,6 +21,7 @@ import com.playgrid.api.client.manager.GameManager;
 import com.playgrid.api.client.manager.PlayerManager;
 import com.playgrid.api.entity.CommandScript;
 import com.playgrid.api.entity.Game;
+import com.playgrid.api.entity.GameConnect;
 import com.playgrid.api.entity.OrderLine;
 import com.playgrid.api.entity.Player;
 import com.playgrid.bukkit.plugin.command.RegisterCommandExecutor;
@@ -57,7 +61,9 @@ public class PlayGridMC extends JavaPlugin {
 		StringBuilder uaBuilder = new StringBuilder(getDescription().getName());
 		uaBuilder.append("/" + getDescription().getVersion());
 		RestAPI.getConfig().appendUserAgent(uaBuilder.toString());
-	}
+		// add the underlying server user agent string
+		RestAPI.getConfig().appendUserAgent(getServerUserAgent());
+    }
 
 	/**
 	 * Enable PlayGridMC Plugin
@@ -95,8 +101,15 @@ public class PlayGridMC extends JavaPlugin {
 			// Connect
 			GameManager gameManager = RestAPI.getInstance().getGameManager();
 			game = gameManager.self();
-			gameManager.connect(game);
-			getLogger().info(String.format("Connected as %s", game.name));
+			GameConnect connect = gameManager.connect(game);                  
+			getLogger().info(connect.message);
+			if(connect.warning_message != null && !connect.warning_message.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append("[PlayGridMC] ");
+				builder.append(ChatColor.YELLOW);
+				builder.append(connect.warning_message); 
+				getServer().getConsoleSender().sendMessage(builder.toString());				
+			}
 
 			// Initialize features
 			permissions = new Permissions(this);
@@ -183,11 +196,60 @@ public class PlayGridMC extends JavaPlugin {
 			config.set("player.status", config.getConfigurationSection("player_status"));
 			config.set("player_status", null);
 		}
-
+		
 		// TODO (JP): Backup current config.yml
 		// TODO (JP): Save migrated config.yml
-
+		
 		return config;
+    }
+	
+	public String getPlayerLocale(org.bukkit.entity.Player player) {
+        String locale;
+
+        try {
+            /*
+                It seems an API call has not yet been included, therefore
+                we have to use reflection to obtain the locale.
+            */
+            Object getHandle = player.getClass().getMethod("getHandle", (Class<?>[]) null).invoke(player, (Object[]) null);
+            Field language = getHandle.getClass().getDeclaredField("locale");
+            language.setAccessible(true);
+            locale = (String)language.get(getHandle);
+
+        } catch (Throwable e){
+            return("en-US");
+        }
+        return locale;
+	}
+	
+	public void activatePlayerLocale(org.bukkit.entity.Player player) {
+		String locale = this.getPlayerLocale(player);
+		RestAPI.getConfig().setLocale(locale);
+	}
+	
+	/**
+	 * Get the type and version of underlying server
+	 */
+	public String getServerUserAgent() {
+		String cb_version;
+		String cb_name;
+		String userAgent;
+		
+		cb_name = getServer().getName();
+		cb_version = getServer().getBukkitVersion();
+		userAgent = cb_name+"/"+cb_version;
+		
+		// have to parse in order to get MC version
+		String long_version = getServer().getVersion();
+	    Pattern pattern = Pattern.compile("\\(MC: (.*?)\\)");
+	    Matcher matcher = pattern.matcher(long_version);
+	    if(matcher.find()) {
+	    	String mc_version;
+	    	
+	    	mc_version = matcher.group(1);		
+	    	userAgent += " "+"Minecraft/"+mc_version;
+	    }
+	    return(userAgent);
 	}
 
 	/**

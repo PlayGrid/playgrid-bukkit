@@ -39,7 +39,9 @@ public class PlayerConnectionListener implements Listener {
 		String player_uid = event.getPlayer().getUniqueId().toString().replaceAll("-", "");
 		
 		try {
-
+			
+			plugin.activatePlayerLocale(event.getPlayer()); // set language
+			
 			try {
 				PlayerManager playerManager = RestAPI.getInstance().getPlayerManager();
 				pPlayer = playerManager.authorize(name, player_uid);
@@ -80,6 +82,9 @@ public class PlayerConnectionListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
+		
+		plugin.activatePlayerLocale(event.getPlayer()); // set language
+
 		try {
 			String name = event.getPlayer().getName();
 			Player pPlayer = plugin.getPlayer(name);
@@ -128,6 +133,9 @@ public class PlayerConnectionListener implements Listener {
 
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
+		
+		plugin.activatePlayerLocale(event.getPlayer()); // set language
+		
 		try {
 			String name = event.getPlayer().getName();
 
