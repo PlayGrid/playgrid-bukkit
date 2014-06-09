@@ -120,7 +120,8 @@ public class Permissions {
 			return;
 		}
 
-		String[] groups = provider.getPlayerGroups(Bukkit.getPlayer(player.name));
+		World world = null;  // null world for global groups
+		String[] groups = provider.getPlayerGroups(world, player.name);
 		for (String group : groups) {
 			if (group.startsWith("playgrid.")) {
 				if (!removeGroup(player, group)) {
