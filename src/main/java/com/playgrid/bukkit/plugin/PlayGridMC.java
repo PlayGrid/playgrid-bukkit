@@ -99,7 +99,7 @@ public class PlayGridMC extends JavaPlugin {
 			getLogger().info(String.format("Connected as %s", game.name));
 
 			// Initialize features
-			permissions = new Permissions(this, game.permission_groups);
+			permissions = new Permissions(this);
 			stats = new Stats(this);
 
 			// Initialize listeners & tasks
@@ -191,9 +191,8 @@ public class PlayGridMC extends JavaPlugin {
 	}
 
 	/**
-	 * Store Player in the activePlayers cache - updates permission_groups with
-	 * player.status group
-	 * 
+	 * Store Player in the activePlayers cache
+	 *  
 	 * @param player
 	 */
 	public void setPlayer(Player player) {

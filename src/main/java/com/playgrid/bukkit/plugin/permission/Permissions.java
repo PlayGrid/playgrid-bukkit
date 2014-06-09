@@ -1,7 +1,5 @@
 package com.playgrid.bukkit.plugin.permission;
 
-import java.util.Arrays;
-
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Bukkit;
@@ -14,7 +12,6 @@ import com.playgrid.bukkit.plugin.PlayGridMC;
 public class Permissions {
 
 	private final PlayGridMC plugin;
-	private final String[] groups;
 	private Permission provider;
 	private boolean enabled = true;
 
@@ -22,18 +19,10 @@ public class Permissions {
 	 * Constructor
 	 */
 	public Permissions(PlayGridMC plugin) {
-		this(plugin, new String[0]);
-	}
-
-	/**
-	 * Constructor
-	 */
-	public Permissions(PlayGridMC plugin, String[] groups) {
 
 		this.plugin = plugin;
-		this.groups = groups;
 
-		boolean enable_groups = plugin.getConfig().getBoolean("player.enable_groups", false);
+		boolean enable_groups = plugin.getConfig().getBoolean("player.enable_groups", true);
 
 		if (plugin.getServer().getPluginManager().isPluginEnabled("Vault")) {
 			RegisteredServiceProvider<Permission> rsp;
@@ -50,15 +39,7 @@ public class Permissions {
 					disable(String.format(msg, provider.getName()));
 				
 				} else if (!enable_groups) {
-					if (this.groups.length > 0) {
-						msg = "Set 'player.enable_groups: true' in config.yml ";
-						msg += "to enable PlayGrid group management for %s.";
-						msg = String.format(msg, Arrays.toString(this.groups));
-						disable(msg);
-					}
-
-				} else {
-					plugin.getLogger().info(String.format("Using PlayGrid groups %s", Arrays.toString(this.groups)));
+					disable("Set 'player.enable_groups: true' in config.yml to enable PlayGrid permission group support");
 				}
 
 			} else {
@@ -79,7 +60,6 @@ public class Permissions {
 		if (provider != null && enabled) {
 			return true;
 		}
-
 		return false;
 	}
 
@@ -164,6 +144,7 @@ public class Permissions {
 			return false;
 		}
 
+		group = group.toLowerCase();
 		try {
 			World world = null;  // null world for global groups
 			return provider.playerAddGroup(world, player.name, group);
@@ -189,6 +170,7 @@ public class Permissions {
 			return false;
 		}
 
+		group = group.toLowerCase();
 		try {
 			World world = null;  // null world for global groups
 			return provider.playerRemoveGroup(world, player.name, group);
