@@ -2,7 +2,6 @@ package com.playgrid.bukkit.plugin.permission;
 
 import net.milkbowl.vault.permission.Permission;
 
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
