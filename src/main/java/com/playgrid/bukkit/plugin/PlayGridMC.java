@@ -92,7 +92,7 @@ public class PlayGridMC extends JavaPlugin {
 			} catch (NullPointerException e) {
 				StringBuilder builder = new StringBuilder();
 				builder.append(ChatColor.RED);
-				builder.append("[PlayGridMC] There was a problem enabling commands.");
+				builder.append("[PlayGridMC] Could not enable commands");
 				getServer().getConsoleSender().sendMessage(builder.toString());
 
 				throw e;
