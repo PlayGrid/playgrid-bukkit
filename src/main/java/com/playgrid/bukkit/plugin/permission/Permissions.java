@@ -33,12 +33,19 @@ public class Permissions {
 				String msg = String.format("Detected Vault permissions provider %s", provider.getName());
 				plugin.getLogger().info(msg);
 
-				if (!provider.hasGroupSupport()) {
-					msg = "%s does not provide group support";
-					disable(String.format(msg, provider.getName()));
-				
-				} else if (!enable_groups) {
+				try {
+					if (!provider.hasGroupSupport()) {
+						msg = "%s does not provide group support";
+						disable(String.format(msg, provider.getName()));
+						return;
+					} 
+				} catch(NoSuchMethodError e) {
+					// unable to determine group support at this time, carry on
+				}
+					
+				if (!enable_groups) {
 					disable("Set 'player.enable_groups: true' in config.yml to enable PlayGrid permission group support");
+					return;
 				}
 
 			} else {
