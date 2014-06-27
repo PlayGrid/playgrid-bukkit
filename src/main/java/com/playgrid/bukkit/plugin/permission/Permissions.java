@@ -39,14 +39,27 @@ public class Permissions {
 						disable(String.format(msg, provider.getName()));
 						return;
 					} 
+
 				} catch(NoSuchMethodError e) {
 					// unable to determine group support at this time, carry on
 				}
-					
+
 				if (!enable_groups) {
 					disable("Set 'player.enable_groups: true' in config.yml to enable PlayGrid permission group support");
 					return;
 				}
+				
+				try {
+					// Setup Registration and Membership groups
+					World world = null;  // null world for global groups
+					for (Group group : Group.getGroups()) {
+						String path = group.getGroupPath();
+						provider.groupAdd(world, path, path);
+					}
+				} catch (Exception e) {
+					disable("Unable to initialize base playgrid.* groups");
+				}
+				
 
 			} else {
 				disable("Vault permissions provider not found");
@@ -95,24 +108,26 @@ public class Permissions {
 
 		removeGroups(player);
 		
-		String group;
+		String group_path;
 		if (player.entitlements.length != 0) {
-			group = "playgrid.entitlement." + player.entitlements[player.entitlements.length - 1];
+			String entitlement = player.entitlements[player.entitlements.length - 1];
+			group_path = Group.getGroupPath(entitlement);
+			World world = null;  // null world for global groups
+			provider.groupAdd(world, group_path, group_path);
 		
 		} else if (player.membership != null) {
-			group = "playgrid.membership." + player.membership;
+			group_path = Group.getGroupPath(player.membership);
 		
 		} else {
-			group = "playgrid." + player.registration;
+			group_path = Group.getGroupPath(player.registration);
 		}
 
-		group = group.toLowerCase();
-		if (!addGroup(player, group)) {
-			plugin.getLogger().warning(String.format("Unable to add %s to the '%s' group", player.name, group));
+		if (!addGroup(player, group_path)) {
+			plugin.getLogger().warning(String.format("Unable to add %s to the '%s' group", player.name, group_path));
 			return null;
 		}
 
-		return group;
+		return group_path;
 	}
 
 	/**
@@ -187,5 +202,91 @@ public class Permissions {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Group Enum
+	 */
+	public enum Group {
+		// Registration Groups
+		UNREGISTERED ("playgrid.unregistered"),
+		REGISTERED ("playgrid.registered"),
+		VERIFIED ("playgrid.verified"),
+		
+		// Member Groups
+		MEMBER ("playgrid.membership.member"),
+		STAFF ("playgrid.membership.staff"),
+		ADMIN ("playgrid.membership.admin");
+		
+		private String path;
+		
+		Group(String path) {
+			this.path = path;
+		}
+
+		/**
+		 * Get Registration Groups
+		 * @return all Registration Groups
+		 */
+		static Group[] getRegistrationGroups() {
+			return new Group[]{UNREGISTERED, REGISTERED, VERIFIED};
+		}
+
+		/**
+		 * Get Membership Groups
+		 * @return all Membership Groups
+		 */
+		static Group[] getMembershipGroups() {
+			return new Group[]{MEMBER, STAFF, ADMIN};
+		}
+
+		/**
+		 * Get all Registration and Membership Groups
+		 * @return all pre-defined Groups
+		 */
+		static Group[] getGroups() {
+			return Group.values();
+		}
+
+		/**
+		 * Get Group by Registration or Membership name
+		 * @param name 
+		 * @return Group
+		 */
+		static Group getGroup(String name) {
+			try {
+				return valueOf(name.toUpperCase());
+				
+			} catch (IllegalArgumentException e) {
+				return null;
+			}
+		}
+		
+		/**
+		 * Get Fully Qualified Group Path
+		 * 
+		 * 	If name is does not match pre-defined Registration or Membership group
+		 * 	then assume that it is the name of an Entitlement 
+		 * 
+		 * @param name 
+		 * @return fully qualified Group path
+		 */
+		static String getGroupPath(String name) {
+			Group group = getGroup(name);
+			if (group != null) {
+				return group.path;
+			
+			} else {
+				return "playgrid.entitlement." + name.toLowerCase();
+			}
+		}
+		
+		/**
+		 * Get Group Path
+		 * @return fully qualified Group path
+		 */
+		public String getGroupPath() {
+			return this.path;
+		}
 	}
 }
