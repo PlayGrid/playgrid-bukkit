@@ -50,7 +50,7 @@
     <dependency>
       <groupId>net.milkbowl.vault</groupId>
       <artifactId>Vault</artifactId>
-      <version>1.2.31</version>
+      <version>1.4.1</version>
     </dependency>
     <dependency>
     	<groupId>com.playgrid</groupId>
@@ -297,5 +297,5 @@
   <url>http://www.playgrid.com/</url>
   <description>A Bukkit plugin to connect to the PlayGrid Platform</description>
 
-  <version>3.00</version>
+  <version>3.01</version>
 </project>
