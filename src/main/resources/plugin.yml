@@ -10,3 +10,7 @@ commands:
     description: Register with the server.
     usage: /<command> <email>
     aliases: pgpreg
+    
+  pg: 
+    description: PlayGridMC commands
+    usage: /<command> help [<playgrid command>]
