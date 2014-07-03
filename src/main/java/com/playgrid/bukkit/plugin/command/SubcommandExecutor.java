@@ -1,5 +1,8 @@
 package com.playgrid.bukkit.plugin.command;
 
+import javax.ws.rs.WebApplicationException;
+
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
@@ -58,5 +61,25 @@ public abstract class SubcommandExecutor implements CommandExecutor {
 	
 	public void setAliases(String[] aliases) {
 		this.aliases = aliases;
+	}
+	
+	public void sendWebApplicationExceptionMessage(CommandSender sender, WebApplicationException ex) {
+		sendWebApplicationExceptionMessage(sender, ex, null);
+	}
+	
+	public void sendWebApplicationExceptionMessage(CommandSender sender, WebApplicationException ex, String default_message) {
+		StringBuilder sb = new StringBuilder("[PlayGridMC] " + ChatColor.GRAY);
+		
+		String message = ex.getMessage();
+		if (message != null && !message.isEmpty()) {
+			sb.append(message);
+			
+		} else if (default_message != null && !default_message.isEmpty()) {
+			sb.append(default_message);
+			
+		} else {
+			sb.append("Unable to process your request at this time");
+		}
+		sender.sendMessage(sb.toString());
 	}
 }
