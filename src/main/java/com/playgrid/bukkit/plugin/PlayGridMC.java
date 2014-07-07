@@ -24,6 +24,7 @@ import com.playgrid.api.entity.Game;
 import com.playgrid.api.entity.GameConnect;
 import com.playgrid.api.entity.OrderLine;
 import com.playgrid.api.entity.Player;
+import com.playgrid.bukkit.plugin.command.PGCommandExecutorManager;
 import com.playgrid.bukkit.plugin.command.RegisterCommandExecutor;
 import com.playgrid.bukkit.plugin.handler.LogHandler;
 import com.playgrid.bukkit.plugin.listener.PlayerConnectionListener;
@@ -90,6 +91,8 @@ public class PlayGridMC extends JavaPlugin {
 				// Initialize commands
 				CommandExecutor cmd = new RegisterCommandExecutor(this);
 				getCommand("register").setExecutor(cmd);
+				
+				new PGCommandExecutorManager(this);
 
 			} catch (NullPointerException e) {
 				StringBuilder builder = new StringBuilder();
