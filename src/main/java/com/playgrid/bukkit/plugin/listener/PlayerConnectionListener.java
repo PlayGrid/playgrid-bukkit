@@ -38,6 +38,10 @@ public class PlayerConnectionListener implements Listener {
 		String name = event.getPlayer().getName();
 		String player_uid = event.getPlayer().getUniqueId().toString().replaceAll("-", "");
 		
+		if(plugin.debug == true) {
+			plugin.getLogger().info("Player "+name+" Login with uid: "+player_uid);
+		}
+		
 		try {
 			
 			plugin.activatePlayerLocale(event.getPlayer()); // set language

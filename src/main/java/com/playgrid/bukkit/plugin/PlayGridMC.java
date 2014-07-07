@@ -36,6 +36,7 @@ public class PlayGridMC extends JavaPlugin {
 	public Game game;
 	public Permissions permissions;
 	public Stats stats;
+	public Boolean debug = false;
 
 	private final Map<String, Player> activePlayers = new HashMap<String, Player>();
 
@@ -48,7 +49,8 @@ public class PlayGridMC extends JavaPlugin {
 		getConfig().options().copyDefaults(true);
 		saveDefaultConfig();
 
-		RestAPI.getConfig().setDebug(getConfig().getBoolean("debug"));
+		this.debug = getConfig().getBoolean("debug");
+		RestAPI.getConfig().setDebug(this.debug);
 
 		@SuppressWarnings("unchecked")
 		Map<String, String> pgp = (Map<String, String>) (Map<?, ?>) getConfig().getConfigurationSection("pgp").getValues(true);
