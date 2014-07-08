@@ -38,6 +38,8 @@ public class PlayGridMC extends JavaPlugin {
 	public Permissions permissions;
 	public Stats stats;
 	public Boolean debug = false;
+	public Boolean onlineMode = true; // false if server is running in offline (unathenticated) mode
+	public Boolean ignorePlayerUUID = false; // true if server version is pre 1.7.2 where UUIDs are inconsistent
 
 	private final Map<String, Player> activePlayers = new HashMap<String, Player>();
 
@@ -49,9 +51,28 @@ public class PlayGridMC extends JavaPlugin {
 		// Get configuration
 		getConfig().options().copyDefaults(true);
 		saveDefaultConfig();
-
+		
 		this.debug = getConfig().getBoolean("debug");
 		RestAPI.getConfig().setDebug(this.debug);
+		
+		this.onlineMode = this.getServer().getOnlineMode();
+		if(this.debug && !onlineMode) 
+			getLogger().info("Server is running in offline mode");
+		// check to see if serer version is pre-1.7.2, if so ignore player UUIDs
+		String version = this.getServer().getBukkitVersion().split("-")[0];
+		if(debug)
+			getLogger().info("Server version: "+version);
+		int version_a = Integer.parseInt(version.split("\\.")[0]);
+		int version_b = Integer.parseInt(version.split("\\.")[1]);
+		int version_c = Integer.parseInt(version.split("\\.")[2]);
+		if(version_a < 1)
+			this.ignorePlayerUUID = true;
+		else if (version_a == 1 && version_b < 7)
+			this.ignorePlayerUUID = true;
+		else if (version_a == 1 && version_b == 7 && version_c < 2 )
+			this.ignorePlayerUUID = true;
+		if(this.debug && ignorePlayerUUID) 
+			getLogger().info("Server is pre-1.7.2: ignoring player UUIDs");
 
 		@SuppressWarnings("unchecked")
 		Map<String, String> pgp = (Map<String, String>) (Map<?, ?>) getConfig().getConfigurationSection("pgp").getValues(true);
@@ -295,6 +316,28 @@ public class PlayGridMC extends JavaPlugin {
 	public Player getPlayer(String name) {
 		return activePlayers.get(name);
 	}
+	
+
+	/**
+	 * Retrieve the UID for a bPlayer
+	 * - considers whether to prepend 'offline!' if in offline mode or to return no uid if pre-1.7.2
+	 * 
+	 * @param bPlayer
+	 */
+	
+	public String getUIDforPlayer(org.bukkit.entity.Player bPlayer) {
+		if(this.ignorePlayerUUID) {
+			return "";
+		} else {
+			String player_uid = bPlayer.getUniqueId().toString().replaceAll("-", "");
+			if(!this.onlineMode) {
+				return "offline!"+player_uid;
+			} else {
+				return player_uid;
+			}
+		}
+	}
+	
 
 	/**
 	 * Remove Player from activePlayers cache

@@ -36,7 +36,7 @@ public class PlayerConnectionListener implements Listener {
 		Player pPlayer = new Player(); // create provisional Player
 		
 		String name = event.getPlayer().getName();
-		String player_uid = event.getPlayer().getUniqueId().toString().replaceAll("-", "");
+		String player_uid = plugin.getUIDforPlayer(event.getPlayer());
 		
 		if(plugin.debug == true) {
 			plugin.getLogger().info("Player "+name+" Login with uid: "+player_uid);
@@ -52,11 +52,8 @@ public class PlayerConnectionListener implements Listener {
 
 			} catch (NotFoundException e) {
 				plugin.getLogger().severe(e.getMessage());
-				
-				// TODO: (JP) Does creating a provisional Player make sense any more?
-				pPlayer.name = name;
-				pPlayer.uid = player_uid;
-
+				event.disallow(Result.KICK_OTHER, e.getMessage());	
+				return;
 			} catch (ServerErrorException e) {
 				plugin.getLogger().severe(e.getMessage());
 				

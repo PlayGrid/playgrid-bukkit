@@ -58,7 +58,7 @@ public class RegisterCommandExecutor implements CommandExecutor {
 
 	private boolean register(Player bPlayer, String email) {
 		PlayerManager playerManager = RestAPI.getInstance().getPlayerManager();
-		String player_uid = bPlayer.getUniqueId().toString().replaceAll("-", "");
+		String player_uid = plugin.getUIDforPlayer(bPlayer);
 
 		PlayerRegistration playerRegistration;
 
