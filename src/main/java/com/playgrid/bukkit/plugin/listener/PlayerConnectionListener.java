@@ -54,6 +54,7 @@ public class PlayerConnectionListener implements Listener {
 				plugin.getLogger().severe(e.getMessage());
 				event.disallow(Result.KICK_OTHER, e.getMessage());	
 				return;
+			
 			} catch (ServerErrorException e) {
 				plugin.getLogger().severe(e.getMessage());
 				

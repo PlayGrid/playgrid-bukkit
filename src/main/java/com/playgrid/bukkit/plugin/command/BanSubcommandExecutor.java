@@ -28,8 +28,8 @@ public class BanSubcommandExecutor extends SubcommandExecutor {
 		setUsage("/pg ban <player> [24h|48h|72h|1w|2w|3w|4w]");
 		setAliases(new String[]{"b"});
 
-		setPermission(new String[]{"playgrid.membership.staff", "playgrid.membership.admin"});
-		setPermission_message("You don't have Staff or Admin permission");
+		setPermission(new String[] {"playgrid.command.ban"});
+		setPermission_message("You don't have 'playgrid.command.ban' permission");
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class BanSubcommandExecutor extends SubcommandExecutor {
 			return true;
 		
 		} else if (args.length > 2) {
-			sender.sendMessage(ChatColor.GRAY + "Too many arguements");
+			sender.sendMessage(ChatColor.GRAY + "Too many arguments");
 			sender.sendMessage(ChatColor.GRAY + getUsage());
 			return true;
 

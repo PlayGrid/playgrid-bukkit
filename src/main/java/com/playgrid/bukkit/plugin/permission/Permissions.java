@@ -54,8 +54,12 @@ public class Permissions {
 					World world = null;  // null world for global groups
 					for (Group group : Group.getGroups()) {
 						String path = group.getGroupPath();
-						provider.groupAdd(world, path, path);
+						String[] permissions = group.getGroupPermissions();
+						for (String permission : permissions) {
+							provider.groupAdd(world, path, permission);
+						}
 					}
+					
 				} catch (Exception e) {
 					disable("Unable to initialize base playgrid.* groups");
 				}
@@ -112,8 +116,6 @@ public class Permissions {
 		if (player.entitlements.length != 0) {
 			String entitlement = player.entitlements[player.entitlements.length - 1];
 			group_path = Group.getGroupPath(entitlement);
-			World world = null;  // null world for global groups
-			provider.groupAdd(world, group_path, group_path);
 		
 		} else if (player.membership != null) {
 			group_path = Group.getGroupPath(player.membership);
@@ -209,19 +211,21 @@ public class Permissions {
 	 */
 	public enum Group {
 		// Registration Groups
-		UNREGISTERED ("playgrid.unregistered"),
-		REGISTERED ("playgrid.registered"),
-		VERIFIED ("playgrid.verified"),
+		UNREGISTERED ("playgrid.unregistered", new String[0]),
+		REGISTERED ("playgrid.registered", new String[0]),
+		VERIFIED ("playgrid.verified", new String[0]),
 		
 		// Member Groups
-		MEMBER ("playgrid.membership.member"),
-		STAFF ("playgrid.membership.staff"),
-		ADMIN ("playgrid.membership.admin");
+		MEMBER ("playgrid.membership.member", new String[0]),
+		STAFF ("playgrid.membership.staff", new String[] {"playgrid.command.ban"}),
+		ADMIN ("playgrid.membership.admin", new String[] {"playgrid.command.ban"});
 		
 		private String path;
+		private String[] permissions;
 		
-		Group(String path) {
+		Group(String path, String[] permissions) {
 			this.path = path;
+			this.permissions = permissions;
 		}
 
 		/**
@@ -287,6 +291,14 @@ public class Permissions {
 		 */
 		public String getGroupPath() {
 			return this.path;
+		}
+
+		/**
+		 * Get Group Permissions
+		 * @return permissions
+		 */
+		public String[] getGroupPermissions() {
+			return this.permissions;
 		}
 	}
 }
