@@ -70,7 +70,7 @@ public class PlayerConnectionListener implements Listener {
 				plugin.setPlayer(pPlayer);
 
 			} else {
-				event.disallow(Result.KICK_BANNED, pPlayer.message);
+				event.disallow(Result.KICK_OTHER, pPlayer.message);
 				
 				plugin.removePlayer(name);
 				plugin.permissions.removeGroups(pPlayer);
