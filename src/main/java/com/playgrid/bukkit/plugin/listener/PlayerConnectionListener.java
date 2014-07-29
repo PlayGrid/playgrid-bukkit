@@ -78,7 +78,7 @@ public class PlayerConnectionListener implements Listener {
 			}
 
 		} catch (Exception e) {
-			plugin.getLogger().log(Level.SEVERE, "", e);
+			plugin.getLogger().log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 
@@ -129,7 +129,7 @@ public class PlayerConnectionListener implements Listener {
 			plugin.getLogger().severe(e.getMessage());
 
 		} catch (Exception e) {
-			plugin.getLogger().log(Level.SEVERE, "", e);
+			plugin.getLogger().log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 
@@ -151,7 +151,7 @@ public class PlayerConnectionListener implements Listener {
 			plugin.getLogger().severe(e.getMessage());
 
 		} catch (Exception e) {
-			plugin.getLogger().log(Level.SEVERE, "", e);
+			plugin.getLogger().log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 

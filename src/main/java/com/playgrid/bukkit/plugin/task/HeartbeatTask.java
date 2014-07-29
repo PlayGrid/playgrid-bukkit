@@ -1,5 +1,7 @@
 package com.playgrid.bukkit.plugin.task;
 
+import java.util.logging.Level;
+
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.playgrid.api.client.RestAPI;
@@ -48,8 +50,7 @@ public class HeartbeatTask extends BukkitRunnable {
 			}
 			
 		} catch (RuntimeException e) {
-			plugin.getLogger().severe(e.getMessage());
-		
+			plugin.getLogger().log(Level.SEVERE, e.getMessage(), e);
 		}
 		
 	}

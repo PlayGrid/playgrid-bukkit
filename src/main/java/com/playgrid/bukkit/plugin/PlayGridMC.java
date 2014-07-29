@@ -154,7 +154,7 @@ public class PlayGridMC extends JavaPlugin {
 			getServer().getPluginManager().disablePlugin(this);
 
 		} catch (Exception e) {
-			getLogger().log(Level.SEVERE, "", e);
+			getLogger().log(Level.SEVERE, e.getMessage(), e);
 			getServer().getPluginManager().disablePlugin(this);
 		}
 	}

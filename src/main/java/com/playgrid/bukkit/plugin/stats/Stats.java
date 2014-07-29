@@ -120,7 +120,7 @@ public class Stats {
 			return gson.toJson(stats_payload);
 
 		} catch (SQLException e) {
-			plugin.getLogger().severe("Unable to connect to the stats database");
+			this.plugin.getLogger().log(Level.SEVERE, "[Stats] " + e.getMessage(), e);
 		}
 
 		return null;
