@@ -27,7 +27,7 @@
 	</repository>
     <repository>
       <id>stats-repo</id>
-      <url>http://centrility.nl:8081/nexus/content/repositories/releases/</url>
+      <url>http://lolmewn.nl:8081/nexus/content/repositories/releases/</url>
     </repository>
   </repositories>
 
@@ -35,12 +35,12 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.7.2-R0.2</version>
+      <version>1.7.9-R0.2</version>
     </dependency>
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>craftbukkit</artifactId>
-      <version>1.7.2-R0.2</version>
+      <version>1.7.9-R0.2</version>
     </dependency>
     <dependency>
       <groupId>joda-time</groupId>
@@ -60,7 +60,7 @@
     <dependency>
     	<groupId>nl.lolmewn.stats</groupId>
     	<artifactId>Stats</artifactId>
-    	<version>1.37</version>
+    	<version>2.0.0</version>
     	<exclusions>
     		<exclusion>
     			<artifactId>AuthMe</artifactId>
@@ -297,5 +297,5 @@
   <url>http://www.playgrid.com/</url>
   <description>A Bukkit plugin to connect to the PlayGrid Platform</description>
 
-  <version>3.01</version>
+  <version>3.02</version>
 </project>
