@@ -5,10 +5,18 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import nl.lolmewn.stats.api.Stat;
 import nl.lolmewn.stats.api.StatsAPI;
+import nl.lolmewn.stats.player.StatData;
+import nl.lolmewn.stats.player.StatsPlayer;
 
 import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -20,6 +28,7 @@ public class Stats {
 	private final PlayGridMC plugin;
 	private StatsAPI provider;
 	private boolean enabled = true;
+	private float version = 0; 
 
 	/**
 	 * Constructor
@@ -30,6 +39,13 @@ public class Stats {
 		boolean enable_stats = plugin.getConfig().getBoolean("player.enable_stats", true);
 
 		if (plugin.getServer().getPluginManager().isPluginEnabled("Stats")) {
+			
+			Pattern pattern = Pattern.compile("(^\\d+\\.\\d+).*");
+			String version_string = plugin.getServer().getPluginManager().getPlugin("Stats").getDescription().getVersion();
+			Matcher matcher = pattern.matcher(version_string);
+			if (matcher.matches()) {
+				version = Float.parseFloat(matcher.group(1));
+			}
 
 			RegisteredServiceProvider<StatsAPI> rsp;
 			rsp = plugin.getServer().getServicesManager().getRegistration(StatsAPI.class);
@@ -90,39 +106,90 @@ public class Stats {
 		if (!this.isEnabled()) {
 			return null;
 		}
+		
+		Map<String, Object> stats_map;
+		
+		if (version >= 2.0) {
+			StatsPlayer statsPlayer = provider.getPlayer(player);
 
-		try {
-			Connection conn = provider.getConnection();
-			Statement statement = conn.createStatement();
+			if (statsPlayer.isTemp()) {
+				/** 
+				 * If 'temp' then statsPlayer is still loading.
+				 * Harvesting now will zero existing stat data.
+				 */
+				return null;
+			}
+			
+			stats_map = new HashMap<String, Object>();
 
-			String sql = String.format("SELECT * FROM Stats_player WHERE player='%s'", player);
+			for (Stat stat : provider.getAllStats()) {
+				StatData statData = statsPlayer.getGlobalStatData(stat);
+				Collection<Object[]> variables = statData.getAllVariables();
+				
+		        double value = 0;
+				if (variables.isEmpty()) {
+					value = statData.getValue(new Object[]{});
+				
+				} else {
+			        for (Object[] var : variables) {
+			            value += statData.getValue(var);
+			        }
+				}
+				
+				// convert 
+				Object converted_value = null; 
+				switch(stat.getMySQLType()) {
+					case INTEGER:
+						converted_value = (int) value;
+						break;
 
-			ResultSet resultSet = statement.executeQuery(sql);
-			ResultSetMetaData metaData = resultSet.getMetaData();
-
-			int columns = metaData.getColumnCount();
-			Map<String, Object> stats = new HashMap<String, Object>(columns);
-
-			while (resultSet.next()) {
-				for (int i = 1; i <= columns; ++i) {
-					String name = metaData.getColumnName(i);
-					if (!name.equals("player")) {
-						stats.put(metaData.getColumnName(i), resultSet.getObject(i));
+					case TIMESTAMP:
+						converted_value = new SimpleDateFormat("MMM d, y h:mm:ss a").format(value);
+						break;
+					
+					default:
+						converted_value = value;
+						break;
+				}
+		
+				stats_map.put(stat.getName(), converted_value);
+			}
+		
+		} else {
+			// Pre 2.0 stats harvesting - for backwards compatibility
+			// This will be deprecated
+			try {
+				Connection conn = provider.getConnection();
+				Statement statement = conn.createStatement();
+	
+				String sql = String.format("SELECT * FROM Stats_player WHERE player='%s'", player);
+	
+				ResultSet resultSet = statement.executeQuery(sql);
+				ResultSetMetaData metaData = resultSet.getMetaData();
+	
+				int columns = metaData.getColumnCount();
+				stats_map = new HashMap<String, Object>(columns);
+	
+				while (resultSet.next()) {
+					for (int i = 1; i <= columns; ++i) {
+						String name = metaData.getColumnName(i);
+						if (!name.equals("player")) {
+							stats_map.put(metaData.getColumnName(i), resultSet.getObject(i));
+						}
 					}
 				}
+
+			} catch (SQLException e) {
+				this.plugin.getLogger().log(Level.SEVERE, "[Stats] " + e.getMessage(), e);
+				return null;
 			}
-
-			Gson gson = new Gson();
-
-			Map<String, Object> stats_payload = new HashMap<String, Object>(1);
-			stats_payload.put("stats", stats);
-
-			return gson.toJson(stats_payload);
-
-		} catch (SQLException e) {
-			this.plugin.getLogger().log(Level.SEVERE, "[Stats] " + e.getMessage(), e);
 		}
+		
+		Gson gson = new Gson();
 
-		return null;
+		Map<String, Object> stats_payload = new HashMap<String, Object>(1);
+		stats_payload.put("stats", stats_map);
+
+		return gson.toJson(stats_payload);
 	}
 }
