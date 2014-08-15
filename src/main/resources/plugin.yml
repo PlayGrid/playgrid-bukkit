@@ -14,3 +14,4 @@ commands:
   pg: 
     description: PlayGridMC commands
     usage: /<command> help [<playgrid command>]
+    aliases: playgrid

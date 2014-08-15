@@ -98,6 +98,7 @@ public class PlayerConnectionListener implements Listener {
 			pPlayer = join(pPlayer);
 			plugin.setPlayer(pPlayer);
 
+			event.getPlayer().sendMessage(pPlayer.motd);
 			event.getPlayer().sendMessage(pPlayer.message);
 
 			String group = plugin.permissions.setGroup(pPlayer);
