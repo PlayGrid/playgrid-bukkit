@@ -355,7 +355,7 @@ public class PlayGridMC extends JavaPlugin {
 	 * @param commands
 	 * @return console log as string
 	 */
-	public String executeCommands(ArrayList<String> commands) throws CommandException {
+	public String executeCommands(ArrayList<String> commands) throws Exception {
 		// add a log handler to capture log output from running commands
 		LogHandler handler = new LogHandler();
 		getServer().getLogger().addHandler(handler);
@@ -366,7 +366,7 @@ public class PlayGridMC extends JavaPlugin {
 											
 				getServer().dispatchCommand(getServer().getConsoleSender(), command);
 
-			} catch (CommandException e) {
+			} catch (Exception e) {
 				getLogger().warning(e.toString());
 				throw e;
 			}
@@ -380,12 +380,12 @@ public class PlayGridMC extends JavaPlugin {
 	 * 
 	 * @param script
 	 */
-	public void executeCommandScript(CommandScript script) throws CommandException {
+	public void executeCommandScript(CommandScript script) throws Exception {
 		try {
 			String log = executeCommands(script.commands);
 			script.complete(log, true);
 		
-		} catch (CommandException e) {
+		} catch (Exception e) {
 			script.complete(e.getMessage(), false);
 			throw e;
 		}
@@ -407,7 +407,7 @@ public class PlayGridMC extends JavaPlugin {
 				if (line.message.length() > 0)
 					bPlayer.sendMessage(line.message);
 			
-			} catch (CommandException e) {
+			} catch (Exception e) {
 				String message = "There was a problem completing your %s order.  Please contact %s support.";
 				message = String.format(message, line.product.title, game.name);
 				bPlayer.sendMessage(message);
