@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 import javax.ws.rs.WebApplicationException;
 
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -76,9 +75,15 @@ public class PlayGridMC extends JavaPlugin {
 
 		@SuppressWarnings("unchecked")
 		Map<String, String> pgp = (Map<String, String>) (Map<?, ?>) getConfig().getConfigurationSection("pgp").getValues(true);
-
+		
+		// Prioritize environment over config.yml
+		String secret_key = System.getenv("PGP_SECRET_KEY");
+		if (secret_key == null) {
+			secret_key = pgp.get("secret_key");
+		}
+		
 		// Setup API
-		RestAPI.getConfig().setAccessToken(pgp.get("secret_key"));
+		RestAPI.getConfig().setAccessToken(secret_key);
 		RestAPI.getConfig().setURL(pgp.get("url"));
 		RestAPI.getConfig().setVersion(pgp.get("version"));
 
@@ -96,7 +101,14 @@ public class PlayGridMC extends JavaPlugin {
 	public void onEnable() {
 		try {
 			// Confirm secret_key
-			if (getConfig().getString("pgp.secret_key") == null) {
+			if (System.getenv("PGP_SECRET_KEY") != null) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(ChatColor.GOLD);
+				builder.append("[PlayGridMC] Using environment variable 'PGP_SECRET_KEY'");
+
+				getServer().getConsoleSender().sendMessage(builder.toString());				
+				
+			} else if (getConfig().getString("pgp.secret_key") == null) {
 				StringBuilder builder = new StringBuilder();
 				builder.append(ChatColor.RED);
 				builder.append("[PlayGridMC] Config.yml property 'secret_key' is missing. ");
