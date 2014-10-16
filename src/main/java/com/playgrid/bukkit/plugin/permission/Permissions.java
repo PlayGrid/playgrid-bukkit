@@ -42,6 +42,8 @@ public class Permissions {
 
 				} catch(NoSuchMethodError e) {
 					// unable to determine group support at this time, carry on
+					msg = "Unable to determine group support for %s";
+					plugin.getLogger().fine(String.format(msg, provider.getName()));
 				}
 
 				if (!enable_groups) {
@@ -59,6 +61,11 @@ public class Permissions {
 							provider.groupAdd(world, path, permission);
 						}
 					}
+					
+				} catch (NullPointerException e) {
+					disable(String.format("%s generatated an error", provider.getName()));
+					msg = "Review your server logs and %s permissions file for errors";
+					plugin.getLogger().warning(String.format(msg, provider.getName()));
 					
 				} catch (Exception e) {
 					disable("Unable to initialize base playgrid.* groups");
