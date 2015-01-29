@@ -2,7 +2,9 @@ package com.playgrid.bukkit.plugin;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -61,15 +63,15 @@ public class PlayGridMC extends JavaPlugin {
 		String version = this.getServer().getBukkitVersion().split("-")[0];
 		if(debug)
 			getLogger().info("Server version: "+version);
-		int version_a = Integer.parseInt(version.split("\\.")[0]);
-		int version_b = Integer.parseInt(version.split("\\.")[1]);
-		int version_c = Integer.parseInt(version.split("\\.")[2]);
-		if(version_a < 1)
+		
+		List<String> versions = new ArrayList<String>(Arrays.asList("0", "0", "0"));
+		versions.addAll(0, Arrays.asList(version.split("\\.")));
+		double version_major = Double.parseDouble(versions.get(0) + '.' + versions.get(1));
+		int version_minor = Integer.parseInt(versions.get(2));
+		
+		if(version_major < 1.7 || (version_major == 1.7 && version_minor < 2))
 			this.ignorePlayerUUID = true;
-		else if (version_a == 1 && version_b < 7)
-			this.ignorePlayerUUID = true;
-		else if (version_a == 1 && version_b == 7 && version_c < 2 )
-			this.ignorePlayerUUID = true;
+		
 		if(this.debug && ignorePlayerUUID) 
 			getLogger().info("Server is pre-1.7.2: ignoring player UUIDs");
 
