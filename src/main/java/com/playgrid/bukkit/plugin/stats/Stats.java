@@ -18,7 +18,7 @@ import nl.lolmewn.stats.api.StatsAPI;
 import nl.lolmewn.stats.player.StatData;
 import nl.lolmewn.stats.player.StatsPlayer;
 
-import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
+import com.google.gson.Gson;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import com.playgrid.bukkit.plugin.PlayGridMC;
