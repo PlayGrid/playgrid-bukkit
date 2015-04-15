@@ -142,7 +142,7 @@
           <relocations>
             <relocation>
               <pattern>com.google.gson</pattern>
-              <shadedPattern>org.bukkit.craftbukkit.libs.com.google.gson</shadedPattern>
+              <shadedPattern>com.google.gson</shadedPattern>
             </relocation>
 
             <relocation>
@@ -297,5 +297,5 @@
   <url>http://www.playgrid.com/</url>
   <description>A Bukkit plugin to connect to the PlayGrid Platform</description>
 
-  <version>3.05</version>
+  <version>3.06</version>
 </project>
